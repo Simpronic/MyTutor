@@ -1,0 +1,47 @@
+.floating-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      font-size: 28px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .toolbar-menu {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 1001;
+    }
+
+    .toolbar-menu button {
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      text-align: left;
+      width: 100%;
+      color: #007bff;
+      font-weight: bold;
+      border-bottom: 1px solid #eee;
+    }
+
+    .toolbar-menu button:last-child {
+      border-bottom: none;
+    }
+
+    .toolbar-menu button:hover {
+      background-color: #f0f2f5;
+    }

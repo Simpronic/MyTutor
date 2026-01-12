@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="../css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+  <link href="../css/style2.css" rel="stylesheet" />
+  <script src="../js/mainpage.js"></script>
+
+</head>
+<body style="background-color: #f0f2f5;">
+  <!-- Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #007bff;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Dashboard</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-5">
+    <h2>Welcome!</h2>
+    <p>This is your dashboard. Click the + button to start an action.</p>
+  </div>
+
+  <!-- Floating + Button -->
+  <button class="floating-btn" id="plusButton">+</button>
+
+  <!-- Toolbar Menu -->
+  <div class="toolbar-menu" id="toolbarMenu">
+    <button onclick="alert('Create new item')">New Item</button>
+    <button onclick="alert('Upload something')">Upload</button>
+    <button onclick="alert('Open settings')">Settings</button>
+  </div>
+
+</body>
+</html>
