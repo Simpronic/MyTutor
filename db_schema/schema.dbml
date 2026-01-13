@@ -1,0 +1,345 @@
+Enum "lezione_stato_enum" {
+  "prenotata"
+  "confermata"
+  "svolta"
+  "annullata"
+  "no_show"
+}
+
+Enum "lezione_stato_storia_da_stato_enum" {
+  "prenotata"
+  "confermata"
+  "svolta"
+  "annullata"
+  "no_show"
+}
+
+Enum "lezione_stato_storia_a_stato_enum" {
+  "prenotata"
+  "confermata"
+  "svolta"
+  "annullata"
+  "no_show"
+}
+
+Enum "pagamento_metodo_enum" {
+  "contanti"
+  "bonifico"
+  "carta"
+  "paypal"
+  "altro"
+}
+
+Enum "pagamento_stato_enum" {
+  "creato"
+  "autorizzato"
+  "pagato"
+  "rimborsato"
+  "fallito"
+  "annullato"
+}
+
+Enum "utente_note_tipo_enum" {
+  "pagamento"
+  "profilo"
+  "altro"
+}
+
+Table "utente" {
+  "id" BIGINT [pk, not null, increment]
+  "username" VARCHAR(64) [not null]
+  "email" VARCHAR(254) [not null]
+  "password_hash" VARCHAR(255) [not null]
+  "nome" VARCHAR(100) [not null]
+  "cognome" VARCHAR(100) [not null]
+  "cf" VARCHAR(16)
+  "telefono" VARCHAR(30)
+  "data_nascita" DATE
+  "citta" VARCHAR(120)
+  "indirizzo" VARCHAR(255)
+  "cap" VARCHAR(10)
+  "paese" VARCHAR(2)
+  "attivo" TINYINT(1) [not null, default: 1]
+  "last_login_at" DATETIME
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    username [unique, name: "uq_utente_username"]
+    email [unique, name: "uq_utente_email"]
+    (cognome, nome) [name: "idx_utente_cognome_nome"]
+  }
+}
+
+Table "ruolo" {
+  "id" SMALLINT [pk, not null, increment]
+  "nome" VARCHAR(50) [not null]
+  "descrizione" VARCHAR(255)
+
+  Indexes {
+    nome [unique, name: "uq_ruolo_nome"]
+  }
+}
+
+Table "permesso" {
+  "id" SMALLINT [pk, not null, increment]
+  "codice" VARCHAR(50) [not null]
+  "descrizione" VARCHAR(255)
+
+  Indexes {
+    codice [unique, name: "uq_permesso_codice"]
+  }
+}
+
+Table "utente_ruolo" {
+  "utente_id" BIGINT [not null]
+  "ruolo_id" SMALLINT [not null]
+  "assegnato_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    (utente_id, ruolo_id) [pk]
+    ruolo_id [name: "idx_ur_ruolo"]
+  }
+}
+
+Table "ruolo_permesso" {
+  "ruolo_id" SMALLINT [not null]
+  "permesso_id" SMALLINT [not null]
+
+  Indexes {
+    (ruolo_id, permesso_id) [pk]
+    permesso_id [name: "idx_rp_permesso"]
+  }
+}
+
+Table "organizzazione" {
+  "id" BIGINT [pk, not null, increment]
+  "nome" VARCHAR(200) [not null]
+  "piva" VARCHAR(20)
+  "email" VARCHAR(254)
+  "telefono" VARCHAR(30)
+  "note" TEXT
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    piva [unique, name: "uq_org_piva"]
+    nome [name: "idx_org_nome"]
+  }
+}
+
+Table "sede" {
+  "id" BIGINT [pk, not null, increment]
+  "organizzazione_id" BIGINT
+  "nome" VARCHAR(200)
+  "citta" VARCHAR(120)
+  "cap" VARCHAR(10)
+  "indirizzo" VARCHAR(255)
+  "note" TEXT
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    organizzazione_id [name: "idx_sede_org"]
+    citta [name: "idx_sede_citta"]
+  }
+}
+
+Table "organizzazione_utente" {
+  "organizzazione_id" BIGINT [not null]
+  "utente_id" BIGINT [not null]
+  "ruolo_in_org" VARCHAR(50)
+  "attivo" TINYINT(1) [not null, default: 1]
+  "associato_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    (organizzazione_id, utente_id) [pk]
+    utente_id [name: "idx_ou_utente"]
+  }
+}
+
+Table "materia" {
+  "id" BIGINT [pk, not null, increment]
+  "nome" VARCHAR(200) [not null]
+  "descrizione" TEXT
+
+  Indexes {
+    nome [unique, name: "uq_materia_nome"]
+  }
+}
+
+Table "argomento" {
+  "id" BIGINT [pk, not null, increment]
+  "nome" VARCHAR(200) [not null]
+  "descrizione" TEXT
+
+  Indexes {
+    nome [name: "idx_argomento_nome"]
+  }
+}
+
+Table "materia_argomento" {
+  "materia_id" BIGINT [not null]
+  "argomento_id" BIGINT [not null]
+
+  Indexes {
+    (materia_id, argomento_id) [pk]
+    argomento_id [name: "idx_ma_argomento"]
+  }
+}
+
+Table "tutor_materia" {
+  "tutor_id" BIGINT [not null]
+  "materia_id" BIGINT [not null]
+  "prezzo_orario" DECIMAL(10,2)
+  "valuta" CHAR(3) [not null, default: 'EUR']
+
+  Indexes {
+    (tutor_id, materia_id) [pk]
+    materia_id [name: "idx_tm_materia"]
+  }
+}
+
+Table "disponibilita_tutor" {
+  "id" BIGINT [pk, not null, increment]
+  "tutor_id" BIGINT [not null]
+  "giorno_settimana" TINYINT [not null]
+  "ora_inizio" TIME [not null]
+  "ora_fine" TIME [not null]
+  "timezone" VARCHAR(50) [not null, default: 'Europe/Rome']
+  "attiva" TINYINT(1) [not null, default: 1]
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    tutor_id [name: "idx_disp_tutor"]
+    giorno_settimana [name: "idx_disp_giorno"]
+  }
+}
+
+Table "lezione" {
+  "id" BIGINT [pk, not null, increment]
+  "organizzazione_id" BIGINT
+  "sede_id" BIGINT
+  "tutor_id" BIGINT [not null]
+  "studente_id" BIGINT [not null]
+  "materia_id" BIGINT [not null]
+  "argomento_id" BIGINT
+  "data_inizio" DATETIME [not null]
+  "data_fine" DATETIME [not null]
+  "timezone" VARCHAR(50) [not null, default: 'Europe/Rome']
+  "stato" lezione_stato_enum [not null, default: 'prenotata']
+  "prezzo" DECIMAL(10,2)
+  "valuta" CHAR(3) [not null, default: 'EUR']
+  "note" TEXT
+  "note_private" TEXT
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    (tutor_id, data_inizio) [name: "idx_lezione_tutor_data"]
+    (studente_id, data_inizio) [name: "idx_lezione_studente_data"]
+    organizzazione_id [name: "idx_lezione_org"]
+    materia_id [name: "idx_lezione_materia"]
+    stato [name: "idx_lezione_stato"]
+  }
+}
+
+Table "lezione_stato_storia" {
+  "id" BIGINT [pk, not null, increment]
+  "lezione_id" BIGINT [not null]
+  "da_stato" lezione_stato_storia_da_stato_enum
+  "a_stato" lezione_stato_storia_a_stato_enum [not null]
+  "cambiato_da" BIGINT
+  "cambiato_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "motivo" VARCHAR(255)
+
+  Indexes {
+    lezione_id [name: "idx_lss_lezione"]
+    cambiato_da [name: "idx_lss_cambiato_da"]
+  }
+}
+
+Table "pagamento" {
+  "id" BIGINT [pk, not null, increment]
+  "lezione_id" BIGINT
+  "studente_id" BIGINT [not null]
+  "tutor_id" BIGINT
+  "importo" DECIMAL(10,2) [not null]
+  "valuta" CHAR(3) [not null, default: 'EUR']
+  "metodo" pagamento_metodo_enum [not null, default: 'altro']
+  "stato" pagamento_stato_enum [not null, default: 'creato']
+  "riferimento_esterno" VARCHAR(255)
+  "note" TEXT
+  "pagato_at" DATETIME
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    studente_id [name: "idx_pag_studente"]
+    lezione_id [name: "idx_pag_lezione"]
+    stato [name: "idx_pag_stato"]
+  }
+}
+
+Table "utente_note" {
+  "id" BIGINT [pk, not null, increment]
+  "utente_id" BIGINT [not null]
+  "tipo" utente_note_tipo_enum [not null, default: 'altro']
+  "testo" TEXT [not null]
+  "creato_da" BIGINT
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    utente_id [name: "idx_un_utente"]
+    creato_da [name: "idx_un_creato_da"]
+  }
+}
+
+Ref "fk_ur_utente":"utente"."id" < "utente_ruolo"."utente_id"
+
+Ref "fk_ur_ruolo":"ruolo"."id" < "utente_ruolo"."ruolo_id"
+
+Ref "fk_rp_ruolo":"ruolo"."id" < "ruolo_permesso"."ruolo_id"
+
+Ref "fk_rp_permesso":"permesso"."id" < "ruolo_permesso"."permesso_id"
+
+Ref "fk_sede_org":"organizzazione"."id" < "sede"."organizzazione_id"
+
+Ref "fk_ou_org":"organizzazione"."id" < "organizzazione_utente"."organizzazione_id"
+
+Ref "fk_ou_utente":"utente"."id" < "organizzazione_utente"."utente_id"
+
+Ref "fk_ma_materia":"materia"."id" < "materia_argomento"."materia_id"
+
+Ref "fk_ma_argomento":"argomento"."id" < "materia_argomento"."argomento_id"
+
+Ref "fk_tm_tutor":"utente"."id" < "tutor_materia"."tutor_id"
+
+Ref "fk_tm_materia":"materia"."id" < "tutor_materia"."materia_id"
+
+Ref "fk_disp_tutor":"utente"."id" < "disponibilita_tutor"."tutor_id"
+
+Ref "fk_lezione_org":"organizzazione"."id" < "lezione"."organizzazione_id"
+
+Ref "fk_lezione_sede":"sede"."id" < "lezione"."sede_id"
+
+Ref "fk_lezione_tutor":"utente"."id" < "lezione"."tutor_id"
+
+Ref "fk_lezione_studente":"utente"."id" < "lezione"."studente_id"
+
+Ref "fk_lezione_materia":"materia"."id" < "lezione"."materia_id"
+
+Ref "fk_lezione_argomento":"argomento"."id" < "lezione"."argomento_id"
+
+Ref "fk_lss_lezione":"lezione"."id" < "lezione_stato_storia"."lezione_id"
+
+Ref "fk_lss_cambiato_da":"utente"."id" < "lezione_stato_storia"."cambiato_da"
+
+Ref "fk_pag_lezione":"lezione"."id" < "pagamento"."lezione_id"
+
+Ref "fk_pag_studente":"utente"."id" < "pagamento"."studente_id"
+
+Ref "fk_pag_tutor":"utente"."id" < "pagamento"."tutor_id"
+
+Ref "fk_un_utente":"utente"."id" < "utente_note"."utente_id"
+
+Ref "fk_un_creato_da":"utente"."id" < "utente_note"."creato_da"
