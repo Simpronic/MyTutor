@@ -4,12 +4,17 @@
   <meta charset="UTF-8" />
   <title>Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <link href="../css/bootstrap.min.css" rel="stylesheet" />
   <link href="../css/style.css" rel="stylesheet" />
   <link href="../css/style2.css" rel="stylesheet" />
-  <script src="../js/mainpage.js"></script>
 
+  <!-- JS (defer = esegue dopo il parsing HTML) -->
+  <script defer src="../js/bootstrap.bundle.js"></script>
+  <script defer src="../js/WebComponents/LessonCards.js"></script>
+  <script defer src="../js/mainpage.js"></script>
 </head>
+
 <body style="background-color: #f0f2f5;">
   <!-- Top Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #007bff;">
@@ -19,10 +24,69 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="container mt-5">
+  <main class="container mt-5">
     <h2>Welcome!</h2>
-    <p>This is your dashboard. Click the + button to start an action.</p>
-  </div>
+    <p>
+      Questa è la pagina principale dove sono presenti i tuoi prossimi appuntamenti.
+      Clicca il bottone + e scegli la tua prossima azione!
+    </p>
+
+    <section class="event-carousel mt-5">
+      <h4 class="mb-4 text-primary">Upcoming Events</h4>
+
+      <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+          <!-- Slide 1 -->
+          <div class="carousel-item active">
+            <div class="row g-4">
+
+              <div class="col-md-4">
+                <lesson-card
+                  title="Next Lesson"
+                  first="Mario"
+                  last="Rossi"
+                  subject="Matematica"
+                  topics="Equazioni"
+                  variant="event"
+                  date = '20/01/2025' 
+                  id = 200
+                  >
+                </lesson-card>
+              </div>
+
+              <div class="col-md-4">
+                <lesson-card
+                  name="Jane Smith"
+                  subject="History"
+                  topics="WWII, Cold War"
+                  variant="event">
+                </lesson-card>
+              </div>
+
+              <div class="col-md-4">
+                <lesson-card
+                  name="Alice Brown"
+                  subject="Chemistry"
+                  topics="Atoms, Bonds"
+                  variant="event">
+                </lesson-card>
+              </div>
+
+            </div>
+          </div>
+
+
+        <!-- Carousel Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+  </main>
 
   <!-- Floating + Button -->
   <button class="floating-btn" id="plusButton">+</button>
@@ -33,6 +97,5 @@
     <button onclick="alert('Upload something')">Upload</button>
     <button onclick="alert('Open settings')">Settings</button>
   </div>
-
 </body>
 </html>

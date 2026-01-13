@@ -14,7 +14,7 @@
       z-index: 1000;
     }
 
-    .toolbar-menu {
+.toolbar-menu {
       position: fixed;
       bottom: 100px;
       right: 30px;
@@ -27,7 +27,7 @@
       z-index: 1001;
     }
 
-    .toolbar-menu button {
+.toolbar-menu button {
       padding: 10px 20px;
       border: none;
       background: none;
@@ -38,10 +38,103 @@
       border-bottom: 1px solid #eee;
     }
 
-    .toolbar-menu button:last-child {
+.toolbar-menu button:last-child {
       border-bottom: none;
     }
 
-    .toolbar-menu button:hover {
+.toolbar-menu button:hover {
       background-color: #f0f2f5;
     }
+
+.lesson-card {
+  border-left: 6px solid #007bff;
+  border-radius: 10px;
+  background-color: white;
+  padding: 1rem;
+  transition: transform 0.2s;
+}
+
+.lesson-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.lesson-section {
+  margin-top: 40px;
+}
+
+.lesson-card {
+  border-left: 4px solid #007bff;
+  border-radius: 10px;
+  background-color: white;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.lesson-card:hover {
+  transform: scale(1.03);
+}
+
+.lesson-card .card-body {
+  padding: 1rem;
+}
+
+@media (max-width: 767px) {
+  .event-card {
+    margin-bottom: 1rem;
+  }
+}
+
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #007bff; /* or any visible color */
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5%;
+}
+
+
+
+
+/* FIX Bootstrap Carousel + Grid */
+.carousel-item {
+  width: 100%;
+}
+
+.carousel-item > .row {
+  width: 100%;
+  margin: 0;
+  justify-content: center;
+}
+
+/* Lesson Card sizing */
+lesson-card {
+  display: block;
+}
+
+lesson-card .card {
+  min-height: 260px;
+}
+
+lesson-card .card-body {
+  padding: 1.5rem;
+}
+
+
+.event-card {
+  border-left: 4px solid #007bff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+}
+
+.event-card:hover {
+  transform: scale(1.03);
+}
+
+
