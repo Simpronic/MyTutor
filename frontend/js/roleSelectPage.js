@@ -22,6 +22,7 @@ async function loadRoles() {
   clearError();
 
   const token = localStorage.getItem("access_token");
+  console.log(token)
   if (!token) return; // già gestito da enforceGuards, qui è solo safety
 
   roleSelect.innerHTML = `<option value="" selected disabled>Loading roles...</option>`;
