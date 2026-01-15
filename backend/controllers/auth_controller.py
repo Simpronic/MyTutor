@@ -13,7 +13,12 @@ from backend.db.base import get_db
 from backend.model import Utente
 from typing import List
 
-from backend.security.auth import get_current_user,create_access_token
+from backend.security.auth import (
+    create_access_token,
+    create_refresh_token,
+    decode_refresh_token,
+    get_current_user,
+)
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -44,6 +49,7 @@ class UserPublic(BaseModel):
 class LoginResponse(BaseModel):
     user: UserPublic
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
 
 
@@ -58,6 +64,14 @@ class RolePublic(BaseModel):
 
 class UserRolesResponse(BaseModel):
     roles: List[RolePublic]
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str = Field(..., min_length=1)
+
+class RefreshTokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
 
 
 
@@ -123,8 +137,21 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse
     user.last_login_at = datetime.now(timezone.utc).replace(tzinfo=None)
     db.commit()
     db.refresh(user)
-    token = create_access_token(subject=str(user.id))
-    return LoginResponse(user=user,access_token=token)
+    access_token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(subject=str(user.id))
+    return LoginResponse(user=user, access_token=access_token, refresh_token=refresh_token)
+
+@router.post("/refresh", response_model=RefreshTokenResponse)
+def refresh_token(payload: RefreshTokenRequest, db: Session = Depends(get_db)) -> RefreshTokenResponse:
+    user_id = decode_refresh_token(payload.refresh_token)
+    user = db.query(Utente).filter(Utente.id == int(user_id)).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    if not user.attivo:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Utente disattivato")
+    access_token = create_access_token(subject=str(user.id))
+    refresh_token = create_refresh_token(subject=str(user.id))
+    return RefreshTokenResponse(access_token=access_token, refresh_token=refresh_token)
 
 @router.get("/me/roles", response_model=UserRolesResponse)
 def get_my_roles(user: Utente = Depends(get_current_user)) -> UserRolesResponse:
