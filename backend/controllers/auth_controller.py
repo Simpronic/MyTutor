@@ -11,6 +11,9 @@ from argon2.exceptions import VerifyMismatchError
 
 from backend.db.base import get_db
 from backend.model import Utente
+from typing import List
+
+from backend.security.auth import get_current_user,create_access_token
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -40,6 +43,22 @@ class UserPublic(BaseModel):
 
 class LoginResponse(BaseModel):
     user: UserPublic
+    access_token: str
+    token_type: str = "bearer"
+
+
+
+class RolePublic(BaseModel):
+    id: int
+    nome: str
+    descrizione: str | None = None
+
+    class Config:
+        from_attributes = True
+
+class UserRolesResponse(BaseModel):
+    roles: List[RolePublic]
+
 
 
 # ----------- UTILS PASSWORD -----------
@@ -104,5 +123,10 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse
     user.last_login_at = datetime.now(timezone.utc).replace(tzinfo=None)
     db.commit()
     db.refresh(user)
+    token = create_access_token(subject=str(user.id))
+    return LoginResponse(user=user,access_token=token)
 
-    return LoginResponse(user=user)
+@router.get("/me/roles", response_model=UserRolesResponse)
+def get_my_roles(user: Utente = Depends(get_current_user)) -> UserRolesResponse:
+    # user.ruoli è già definito in Utente
+    return UserRolesResponse(roles=user.ruoli)
