@@ -53,7 +53,6 @@ class LessonCard extends HTMLElement {
     if (!btn) return;
     btn.onclick = null;
     btn.onclick = () => {
-      alert(this.getAttr('id'))
       const href = btn.dataset.href;
       if (href) window.location.href = href;
       else this.dispatchEvent(new CustomEvent('lesson-open', { bubbles: true }));
