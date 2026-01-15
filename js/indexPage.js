@@ -5,6 +5,7 @@ const userIdInput = document.getElementById("userId");
 const passwordInput = document.getElementById("password");
 
 async function login(identifier, password) {
+    console.log(JSON.stringify({ identifier, password }))
   const response = await fetch(`${API_AUTH_URL_BASE}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -34,7 +35,7 @@ form.addEventListener("submit", async (event) => {
     console.log("Login OK:", user);
 
     // ✅ vai alla tua pagina reale
-    window.location.href = "./MainPage.html";
+    window.location.href = "./roleSelect.html";
   } catch (err) {
     console.error(err);
     alert("Credenziali non valide");

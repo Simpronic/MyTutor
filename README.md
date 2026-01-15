@@ -92,3 +92,36 @@ The **only requirement** is that proper **attribution to the original author** i
 
 This software is provided "as is", without warranty of any kind.  
 Use it at your own risk.
+
+
+# TESTING GUIDLINES:
+
+To properly test the code locally, you can start a python local webserver with the following command
+
+python -m http.server 5500 
+
+This command should bu run into MyTutor folder and then you can reference all the html pages.
+
+For the backend part you can use the VSCode debugger using this configuration: 
+
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "backend.main:app",
+                "--reload"
+            ],
+            "jinja": true
+        }
+    ]
+}
+
+running it from the backend folder
