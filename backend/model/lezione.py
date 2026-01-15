@@ -10,15 +10,12 @@ from sqlalchemy.dialects.mysql import BIGINT, DATETIME, VARCHAR, DECIMAL, CHAR, 
 from backend.db.base import Base
 
 LEZIONE_STATO = ("prenotata", "confermata", "svolta", "annullata", "no_show")
-
+LEZIONE_LUOGO = ("remoto","presenza")
 
 class Lezione(Base):
     __tablename__ = "lezione"
 
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
-
-    organizzazione_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("organizzazione.id"))
-    sede_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("sede.id"))
 
     tutor_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
     studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
@@ -50,9 +47,12 @@ class Lezione(Base):
         server_onupdate=text("CURRENT_TIMESTAMP"),
     )
 
-    # relazioni
-    organizzazione: Mapped[Optional["Organizzazione"]] = relationship("Organizzazione", back_populates="lezioni")
-    sede: Mapped[Optional["Sede"]] = relationship("Sede", back_populates="lezioni")
+    luogo: Mapped[str] = mapped_column(
+        Enum(*LEZIONE_LUOGO, name="lezione_luogo"),
+        nullable=False,
+        server_default=text("'remoto'"),
+    )
+
 
     tutor: Mapped["Utente"] = relationship("Utente", foreign_keys=[tutor_id], back_populates="lezioni_come_tutor")
     studente: Mapped["Utente"] = relationship("Utente", foreign_keys=[studente_id], back_populates="lezioni_come_studente")

@@ -7,9 +7,6 @@ from backend.model.permesso import Permesso
 from backend.model.ruolo import Ruolo
 from backend.model.utente import Utente, UtenteRuolo
 
-from backend.model.organizzazione import Organizzazione, OrganizzazioneUtente
-from backend.model.sede import Sede
-
 from backend.model.materia import Materia, TutorMateria
 from backend.model.argomento import Argomento
 
@@ -31,11 +28,6 @@ __all__ = [
     "Ruolo",
     "Utente",
     "UtenteRuolo",
-
-    # organizzazioni
-    "Organizzazione",
-    "OrganizzazioneUtente",
-    "Sede",
 
     # didattica
     "Materia",

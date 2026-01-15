@@ -19,6 +19,7 @@ async function login(identifier, password) {
 
   const data = await response.json();
   localStorage.setItem("access_token", data.access_token);
+  localStorage.setItem("user", JSON.stringify(data.user));
   return data.user;
 }
 

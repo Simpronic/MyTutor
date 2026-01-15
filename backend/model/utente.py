@@ -58,21 +58,6 @@ class Utente(Base):
         lazy="selectin",
     )
 
-    # ---- LINK: organizzazione_utente (association object) ----
-    organizzazioni_link: Mapped[List["OrganizzazioneUtente"]] = relationship(
-        "OrganizzazioneUtente",
-        back_populates="utente",
-        cascade="all, delete-orphan",
-        lazy="selectin",
-    )
-
-    organizzazioni: Mapped[List["Organizzazione"]] = relationship(
-        "Organizzazione",
-        secondary="organizzazione_utente",
-        viewonly=True,
-        lazy="selectin",
-    )
-
     # ---- LINK: tutor_materia (association object) ----
     tutor_materie_link: Mapped[List["TutorMateria"]] = relationship(
         "TutorMateria",
