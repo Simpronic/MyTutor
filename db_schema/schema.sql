@@ -1,3 +1,5 @@
+CREATE OR REPLACE DATABASE MyTutor
+
 -- =========================
 -- ANAGRAFICA / AUTH
 -- =========================
@@ -315,3 +317,136 @@ ALTER TABLE pagamento
 ALTER TABLE utente_note
   ADD CONSTRAINT fk_un_utente   FOREIGN KEY (utente_id) REFERENCES utente(id),
   ADD CONSTRAINT fk_un_creato_da FOREIGN KEY (creato_da) REFERENCES utente(id);
+
+
+
+--Inserimenti base 
+START TRANSACTION; 
+
+INSERT INTO ruolo (nome, descrizione) VALUES
+  ('SYSTEM_ADMIN', 'Amministratore globale del sistema'),
+  ('ORG_ADMIN',    'Amministratore di una specifica organizzazione'),
+  ('STAFF',        'Staff operativo (segreteria/gestione)'),
+  ('TUTOR',        'Tutor/Insegnante'),
+  ('STUDENTE',     'Studente')
+ON DUPLICATE KEY UPDATE descrizione = VALUES(descrizione);
+
+
+INSERT INTO permesso (codice, descrizione) VALUES
+  -- utenti
+  ('USER_READ',    'Leggere utenti'),
+  ('USER_CREATE',  'Creare utenti'),
+  ('USER_UPDATE',  'Modificare utenti'),
+  ('USER_DISABLE', 'Disattivare utenti'),
+
+  -- ruoli/permessi
+  ('RBAC_READ',    'Leggere ruoli e permessi'),
+  ('RBAC_UPDATE',  'Gestire ruoli e permessi'),
+
+  -- organizzazioni/sedi
+  ('ORG_READ',     'Leggere organizzazioni'),
+  ('ORG_CREATE',   'Creare organizzazioni'),
+  ('ORG_UPDATE',   'Modificare organizzazioni'),
+  ('SEDE_READ',    'Leggere sedi'),
+  ('SEDE_UPDATE',  'Gestire sedi'),
+
+  -- didattica (materie/argomenti)
+  ('SUBJECT_READ',   'Leggere materie'),
+  ('SUBJECT_CREATE', 'Creare materie'),
+  ('SUBJECT_UPDATE', 'Modificare materie'),
+  ('TOPIC_READ',     'Leggere argomenti'),
+  ('TOPIC_UPDATE',   'Gestire argomenti'),
+  ('TUTOR_SUBJECT_SET', 'Impostare materie e tariffe tutor'),
+
+  -- disponibilità
+  ('AVAIL_READ',   'Leggere disponibilità tutor'),
+  ('AVAIL_WRITE',  'Creare/modificare disponibilità tutor'),
+
+  -- lezioni
+  ('LESSON_READ',     'Leggere lezioni'),
+  ('LESSON_CREATE',   'Creare lezioni (prenotazione)'),
+  ('LESSON_UPDATE',   'Modificare lezioni'),
+  ('LESSON_CANCEL',   'Annullare lezioni'),
+  ('LESSON_CONFIRM',  'Confermare lezioni'),
+  ('LESSON_MARK_DONE','Segnare lezione svolta/no_show'),
+
+  -- pagamenti
+  ('PAYMENT_READ',    'Leggere pagamenti'),
+  ('PAYMENT_CREATE',  'Creare pagamenti'),
+  ('PAYMENT_UPDATE',  'Aggiornare stato pagamenti/rimborsi'),
+
+  -- note
+  ('NOTE_READ',    'Leggere note'),
+  ('NOTE_CREATE',  'Creare note'),
+  ('NOTE_UPDATE',  'Modificare note')
+ON DUPLICATE KEY UPDATE descrizione = VALUES(descrizione);
+
+
+INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
+SELECT r.id, p.id
+FROM ruolo r
+JOIN permesso p
+WHERE r.nome = 'SYSTEM_ADMIN';
+
+
+INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
+SELECT r.id, p.id
+FROM ruolo r
+JOIN permesso p
+WHERE r.nome = 'ORG_ADMIN'
+  AND p.codice IN (
+    'USER_READ','USER_CREATE','USER_UPDATE','USER_DISABLE',
+    'RBAC_READ',
+    'ORG_READ','ORG_CREATE','ORG_UPDATE',
+    'SEDE_READ','SEDE_UPDATE',
+    'SUBJECT_READ','SUBJECT_CREATE','SUBJECT_UPDATE',
+    'TOPIC_READ','TOPIC_UPDATE',
+    'LESSON_READ','LESSON_CREATE','LESSON_UPDATE','LESSON_CANCEL','LESSON_CONFIRM','LESSON_MARK_DONE',
+    'PAYMENT_READ','PAYMENT_CREATE','PAYMENT_UPDATE',
+    'NOTE_READ','NOTE_CREATE','NOTE_UPDATE'
+  );
+
+
+INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
+SELECT r.id, p.id
+FROM ruolo r
+JOIN permesso p
+WHERE r.nome = 'STAFF'
+  AND p.codice IN (
+    'USER_READ',
+    'ORG_READ','SEDE_READ',
+    'SUBJECT_READ','TOPIC_READ',
+    'LESSON_READ','LESSON_CREATE','LESSON_UPDATE','LESSON_CANCEL','LESSON_CONFIRM',
+    'PAYMENT_READ','PAYMENT_CREATE',
+    'NOTE_READ','NOTE_CREATE'
+  );
+
+
+INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
+SELECT r.id, p.id
+FROM ruolo r
+JOIN permesso p
+WHERE r.nome = 'TUTOR'
+  AND p.codice IN (
+    'SUBJECT_READ','TOPIC_READ',
+    'TUTOR_SUBJECT_SET',
+    'AVAIL_READ','AVAIL_WRITE',
+    'LESSON_READ','LESSON_UPDATE',      -- poi nel codice limiti alle proprie lezioni
+    'LESSON_CONFIRM','LESSON_MARK_DONE',
+    'PAYMENT_READ',                     -- spesso solo lettura di incassi propri
+    'NOTE_READ','NOTE_CREATE'
+  );
+
+
+INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
+SELECT r.id, p.id
+FROM ruolo r
+JOIN permesso p
+WHERE r.nome = 'STUDENTE'
+  AND p.codice IN (
+    'SUBJECT_READ','TOPIC_READ',
+    'LESSON_READ','LESSON_CREATE','LESSON_CANCEL',  -- limitate alle proprie lezioni
+    'PAYMENT_READ','PAYMENT_CREATE',
+    'NOTE_READ'
+  );
+COMMIT;
