@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+argon2-cffi
+python-jose[cryptography]
