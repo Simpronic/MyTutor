@@ -1,4 +1,7 @@
 import { API_AUTH_URL_BASE } from "./api.js";
+import { navigate } from "./router.js";
+
+
 
 const form = document.getElementById("loginForm");
 const userIdInput = document.getElementById("userId");
@@ -34,8 +37,7 @@ form.addEventListener("submit", async (event) => {
     const user = await login(identifier, password);
     console.log("Login OK:", user);
 
-    // ✅ vai alla tua pagina reale
-    window.location.href = "./roleSelect.html";
+    navigate("roleSelect", { requireAuth: true });
   } catch (err) {
     console.error(err);
     alert("Credenziali non valide");

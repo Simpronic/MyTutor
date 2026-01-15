@@ -1,3 +1,8 @@
+import { enforceGuards } from "./router.js";
+
+enforceGuards({ requireAuth: true, requireRole: true });
+
+// ... il resto del tuo codice (plusButton/toolbarMenu) ...
 document.addEventListener("DOMContentLoaded", function () {
   const plusButton = document.getElementById('plusButton');
   const toolbarMenu = document.getElementById('toolbarMenu');
