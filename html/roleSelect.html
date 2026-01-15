@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Role</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="../css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+
+  <!-- Carica come module -->
+  <script type="module" defer src="../js/roleSelectPage.js"></script>
+</head>
+<body>
+
+  <div class="login-panel text-center">
+    <h3 class="mb-4">Select role</h3>
+
+    <form id="roleForm">
+      <div class="mb-3 text-start">
+        <label for="roleSelect" class="form-label">Role</label>
+        <select class="form-select" id="roleSelect" required>
+          <option value="" selected disabled>Loading roles...</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn access-btn w-100" id="accessBtn" disabled>
+        Access
+      </button>
+
+      <div class="mt-3 text-start">
+        <div class="alert alert-danger d-none" id="errorBox"></div>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>
