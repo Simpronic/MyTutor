@@ -8,6 +8,20 @@
 -- =========================
 -- ANAGRAFICA / AUTH
 -- =========================
+CREATE TABLE paese (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(100) NOT NULL,
+  iso2 CHAR(2) NOT NULL,          -- es: IT, FR, US (ISO 3166-1 alpha-2)
+  iso3 CHAR(3) NULL,              -- opzionale (AFG, ITA...), utile per alcune API/dati
+  iso_numeric CHAR(3) NULL,       -- opzionale (004, 380...), se ti serve
+  attivo TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_paese_iso2 (iso2),
+  UNIQUE KEY uq_paese_nome (nome)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 CREATE TABLE utente (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

@@ -138,3 +138,72 @@ lesson-card .card-body {
 }
 
 
+
+.form-control-settings {
+  background-color: #ffffff;        /* sfondo bianco ad alto contrasto */
+  color: #212529;                   /* testo scuro e ben leggibile */
+  border: 1px solid #ced4da;        /* bordo visibile ma non invasivo */
+  padding: .375rem .75rem;          /* come Bootstrap */
+  border-radius: .375rem;
+  font-size: 1rem;
+  transition: border-color 0.15s ease-in-out,
+              box-shadow 0.15s ease-in-out;
+}
+
+.form-control-settings::placeholder {
+  color: #6c757d;                   /* placeholder grigio leggibile */
+  opacity: 1;
+}
+
+.form-control-settings:focus {
+  background-color: #ffffff;
+  color: #212529;
+  border-color: #80bdff;            /* blu focus visibile */
+  outline: 0;
+  box-shadow: 0 0 0 .2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control-settings:disabled {
+  background-color: #e9ecef;        /* grigio chiaro ben visibile */
+  color: #6c757d;
+  opacity: 1;
+}
+
+/* Allineamento tipo tabella */
+.settings-row .form-label {
+  font-weight: 600;
+  min-width: 140px;       /* larghezza uniforme per le label */
+  display: inline-block;
+}
+
+.settings-row .col-md-6 {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-row {
+  margin-bottom: 0.75rem;
+}
+
+
+/* Layout tipo tabella: label a sinistra, campo a destra */
+.settings-field {
+  display: grid;
+  grid-template-columns: 160px 1fr; /* colonna label fissa + campo fluido */
+  align-items: center;
+  column-gap: 12px;
+}
+
+/* Label allineate e coerenti */
+.settings-label {
+  margin: 0;              /* elimina differenze di altezza dovute ai margini */
+  font-weight: 600;
+}
+
+/* Su mobile torna “stacked” */
+@media (max-width: 575.98px) {
+  .settings-field {
+    grid-template-columns: 1fr;
+    row-gap: 6px;
+  }
+}

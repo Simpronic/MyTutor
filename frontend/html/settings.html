@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Impostazioni</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="../css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+  <link href="../css/style2.css" rel="stylesheet" />
+
+  <script defer src="../js/bootstrap.bundle.js"></script>
+  <script type="module" defer src="../js/settings.js"></script>
+</head>
+
+<body style="background-color: #f0f2f5;">
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #007bff;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="./MainPage.html">Dashboard</a>
+      <span class="navbar-text text-white">Impostazioni</span>
+    </div>
+  </nav>
+
+  <main class="container mt-5">
+    <div id="accessMessage" class="alert alert-warning d-none" role="alert"></div>
+
+    <div id="settingsContent">
+      <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="profile-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#profile"
+            type="button"
+            role="tab"
+            aria-controls="profile"
+            aria-selected="true"
+          >
+            Profilo
+          </button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="users-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#users"
+            type="button"
+            role="tab"
+            aria-controls="users"
+            aria-selected="false"
+          >
+            Gestione utenti
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content bg-white border border-top-0 rounded-bottom p-4" id="settingsTabsContent">
+        <!-- TAB: PROFILO -->
+        <div
+          class="tab-pane fade show active"
+          id="profile"
+          role="tabpanel"
+          aria-labelledby="profile-tab"
+          tabindex="0"
+        >
+          <h4 class="text-primary">Informazioni personali</h4>
+          <p class="text-muted">
+            Qui puoi aggiornare le tue informazioni di base e, se necessario, cambiare la password.
+          </p>
+
+          <form class="row g-3">
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="firstName" class="form-label settings-label">Nome</label>
+                <input type="text" class="form-control-settings" id="firstName" placeholder="Mario" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="lastName" class="form-label settings-label">Cognome</label>
+                <input type="text" class="form-control-settings" id="lastName" placeholder="Rossi" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="email" class="form-label settings-label">Email</label>
+                <input type="email" class="form-control-settings" id="email" placeholder="mario.rossi@email.it" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="phone" class="form-label settings-label">Telefono</label>
+                <input type="tel" class="form-control-settings" id="phone" placeholder="+39 333 123 4567" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="iban" class="form-label settings-label">IBAN</label>
+                <input type="text" class="form-control-settings" id="iban" placeholder="es IT60X0542811101000000123456" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="cf" class="form-label settings-label">CF</label>
+                <input type="text" class="form-control-settings" id="cf" placeholder="RSSMRA80A01H501Z" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="birth" class="form-label settings-label">Data nascita</label>
+                <input type="date" class="form-control-settings" id="birth" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="country" class="form-label settings-label">Paese</label>
+                <select id="country" class="form-control-settings">
+                  <option value="" selected disabled>Seleziona un paese</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="city" class="form-label settings-label">Città</label>
+                <select id="city" class="form-control-settings" disabled>
+                  <option value="" selected disabled>Seleziona prima un paese</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <hr />
+              <h5 class="text-primary">Aggiorna password</h5>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="currentPassword" class="form-label settings-label">Password attuale</label>
+                <input type="password" class="form-control-settings" id="currentPassword" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="settings-field">
+                <label for="newPassword" class="form-label settings-label">Nuova password</label>
+                <input type="password" class="form-control-settings" id="newPassword" />
+              </div>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+              <button type="button" class="btn btn-primary">Salva modifiche</button>
+              <button type="reset" class="btn btn-outline-secondary">Annulla</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB: GESTIONE UTENTI -->
+        <div
+          class="tab-pane fade"
+          id="users"
+          role="tabpanel"
+          aria-labelledby="users-tab"
+          tabindex="0"
+        >
+          <h4 class="text-primary">Gestione utenti</h4>
+          <p class="text-muted">
+            Disponibile solo se possiedi i permessi: USER_READ, USER_CREATE, USER_UPDATE, USER_DISABLE.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-primary">Visualizza utenti</button>
+            <button type="button" class="btn btn-outline-success">Crea utente</button>
+            <button type="button" class="btn btn-outline-warning">Aggiorna utente</button>
+            <button type="button" class="btn btn-outline-danger">Disattiva utente</button>
+          </div>
+
+          <div class="mt-4">
+            <h6 class="text-muted">Azioni rapide</h6>
+            <div class="list-group">
+              <button type="button" class="list-group-item list-group-item-action">Invita un nuovo utente</button>
+              <button type="button" class="list-group-item list-group-item-action">Reset password utente</button>
+              <button type="button" class="list-group-item list-group-item-action">Gestisci ruoli e permessi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

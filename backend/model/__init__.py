@@ -17,6 +17,7 @@ from backend.model.lezione_stato_storia import LezioneStatoStoria
 
 from backend.model.pagamento import Pagamento
 from backend.model.utente_note import UtenteNote
+from backend.model.paese import Paese
 
 __all__ = [
     # pure links (Table)
@@ -28,6 +29,7 @@ __all__ = [
     "Ruolo",
     "Utente",
     "UtenteRuolo",
+    "Paese",
 
     # didattica
     "Materia",

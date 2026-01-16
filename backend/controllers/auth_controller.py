@@ -10,8 +10,8 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 
 from backend.db.base import get_db
-from backend.model import Utente
-from typing import List
+from backend.model import Utente, Permesso, Paese
+from typing import List, Dict
 
 from backend.security.auth import (
     create_access_token,
@@ -28,6 +28,17 @@ pwd_hasher = PasswordHasher()
 
 
 # ----------- SCHEMI Pydantic -----------
+
+class PaeseResponse(BaseModel):
+    id: int
+    nome: str
+    iso2: str = Field(..., min_length=2, max_length=2)
+    iso3: str | None = Field(None, min_length=3, max_length=3)
+    iso_numeric: str | None = Field(None, min_length=3, max_length=3)
+
+    class Config:
+        from_attributes = True    # Pydantic v2
+
 
 class LoginRequest(BaseModel):
     identifier: str = Field(..., min_length=1, max_length=254, description="Username oppure email")
@@ -64,6 +75,18 @@ class RolePublic(BaseModel):
 
 class UserRolesResponse(BaseModel):
     roles: List[RolePublic]
+
+class UserPermission(BaseModel): 
+    id: int 
+    codice: str
+    descrizione: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class UserPermissionResponse(BaseModel): 
+    permissions: List[UserPermission]
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str = Field(..., min_length=1)
@@ -157,3 +180,27 @@ def refresh_token(payload: RefreshTokenRequest, db: Session = Depends(get_db)) -
 def get_my_roles(user: Utente = Depends(get_current_user)) -> UserRolesResponse:
     # user.ruoli è già definito in Utente
     return UserRolesResponse(roles=user.ruoli)
+
+@router.get("/coutries", response_model= List[PaeseResponse])
+def get_countries(db: Session = Depends(get_db)) -> List[PaeseResponse]:
+     paesi = db.query(Paese.id,
+                      Paese.nome,
+                      Paese.iso2,
+                      Paese.iso3,
+                      Paese.iso_numeric
+                      ).filter(Paese.attivo == 1).all()
+     return [PaeseResponse( id=r.id,
+                            nome=r.nome,
+                            iso2=r.iso2,
+                            iso3=r.iso3,
+                            iso_numeric=r.iso_numeric) for r in paesi]
+    
+
+@router.get("/me/permissions", response_model=UserPermissionResponse)
+def get_my_roles(user: Utente = Depends(get_current_user)) -> UserPermissionResponse:
+    permissions_by_id: Dict[int, Permesso] = {}
+    for ruolo in user.ruoli:
+        for permesso in ruolo.permessi:
+            permissions_by_id[permesso.id] = permesso
+    return UserPermissionResponse(permissions=list(permissions_by_id.values()))
+
