@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, status,Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -10,8 +10,10 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 
 from backend.db.base import get_db
-from backend.model import Utente, Permesso, Paese
+from backend.model import Utente, Permesso, Paese, Ruolo
 from typing import List, Dict
+
+from backend.security.permissions import user_permissions
 
 from backend.security.auth import (
     create_access_token,
@@ -197,10 +199,17 @@ def get_countries(db: Session = Depends(get_db)) -> List[PaeseResponse]:
     
 
 @router.get("/me/permissions", response_model=UserPermissionResponse)
-def get_my_roles(user: Utente = Depends(get_current_user)) -> UserPermissionResponse:
+def get_my_permissions(user: Utente = Depends(get_current_user)) -> UserPermissionResponse:
     permissions_by_id: Dict[int, Permesso] = {}
     for ruolo in user.ruoli:
         for permesso in ruolo.permessi:
             permissions_by_id[permesso.id] = permesso
     return UserPermissionResponse(permissions=list(permissions_by_id.values()))
 
+@router.get("/permissions_for_role", response_model=UserPermissionResponse)
+def get_my_roles(
+    user: Utente = Depends(get_current_user),
+    active_role_id: int | None = Header(default=None, alias="X-Active-Role-Id"),
+) -> UserPermissionResponse:
+    permissions = user_permissions(user, active_role_id=active_role_id)
+    return UserPermissionResponse(permissions=permissions)

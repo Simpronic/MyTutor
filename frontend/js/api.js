@@ -59,7 +59,10 @@ export async function authFetch(url, options = {}) {
   if (accessToken) {
     headers.set("Authorization", `Bearer ${accessToken}`);
   }
-
+  const activeRoleId = localStorage.getItem("active_role_id");
+  if (activeRoleId) {
+    headers.set("X-Active-Role-Id", activeRoleId);
+  }
   const response = await fetch(url, { ...options, headers });
   if (response.status !== 401) {
     return response;

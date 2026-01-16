@@ -1,3 +1,4 @@
+import { API_AUTH_URL_BASE, authFetch } from "./api.js";
 import { enforceGuards } from "./router.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
@@ -35,6 +36,26 @@ function getUserPermissions() {
   return normalizePermissions(storedPermissions);
 }
 
+async function fetchAndStorePermissions() {
+  try {
+    const response = await authFetch(`${API_AUTH_URL_BASE}/permissions_for_role`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    const permissions = Array.isArray(data.permissions)
+      ? data.permissions.map((perm) => perm?.codice).filter(Boolean)
+      : [];
+    localStorage.setItem("user_permissions", JSON.stringify(permissions));
+    return permissions;
+  } catch (error) {
+    console.warn("Errore nel caricamento permessi:", error);
+    return getUserPermissions();
+  }
+}
+
 function hasUserManagementPermissions(permissions) {
   return REQUIRED_USER_PERMISSIONS.every((perm) => permissions.includes(perm));
 }
@@ -47,8 +68,8 @@ function isTutorOrStudent(roleName) {
   return roleName === "tutor" || roleName === "studente" || roleName === "student";
 }
 
-function setupPermissions() {
-  const permissions = getUserPermissions();
+async function setupPermissions() {
+  const permissions = await fetchAndStorePermissions();
   const roleName = getActiveRoleName();
   const canManageUsers = hasUserManagementPermissions(permissions);
   const isLimitedUser = isTutorOrStudent(roleName) && !canManageUsers;
