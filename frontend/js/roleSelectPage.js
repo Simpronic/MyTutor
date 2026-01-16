@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./api.js";
+import { API_BASE_URL, authFetch } from "./api.js";
 import { navigate, enforceGuards } from "./router.js";
 
 const form = document.getElementById("roleForm");
@@ -21,17 +21,12 @@ function clearError() {
 async function loadRoles() {
   clearError();
 
-  const token = localStorage.getItem("access_token");
-  console.log(token)
-  if (!token) return; // già gestito da enforceGuards, qui è solo safety
-
   roleSelect.innerHTML = `<option value="" selected disabled>Loading roles...</option>`;
   accessBtn.disabled = true;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/auth/me/roles`, {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },
+    const res = await authFetch(`${API_BASE_URL}/auth/me/roles`, {
+      method: "GET"
     });
 
     if (!res.ok) {

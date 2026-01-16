@@ -2,6 +2,7 @@ import { enforceGuards } from "./router.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
 
+
 const REQUIRED_USER_PERMISSIONS = [
   "USER_READ",
   "USER_CREATE",

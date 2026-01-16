@@ -1,4 +1,4 @@
-import { API_AUTH_URL_BASE } from "./api.js";
+import { API_AUTH_URL_BASE, setAuthTokens} from "./api.js";
 import { navigate } from "./router.js";
 
 
@@ -18,7 +18,10 @@ async function login(identifier, password) {
   if (!response.ok) throw new Error("Login failed");
 
   const data = await response.json();
-  localStorage.setItem("access_token", data.access_token);
+  setAuthTokens({
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+  });
   localStorage.setItem("user", JSON.stringify(data.user));
   return data.user;
 }

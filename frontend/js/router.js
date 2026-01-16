@@ -1,4 +1,7 @@
 // ../js/router.js
+
+import { clearAuthTokens, getAccessToken } from "./api.js";
+
 const ROUTES = {
   login: "./index.html",
   roleSelect: "./roleSelect.html",
@@ -7,7 +10,7 @@ const ROUTES = {
 
 // Guardie centralizzate
 function hasToken() {
-  return Boolean(localStorage.getItem("access_token"));
+  return Boolean(getAccessToken());
 }
 
 function hasActiveRole() {
@@ -64,7 +67,7 @@ export function enforceGuards({ requireAuth = false, requireRole = false } = {})
  * Logout “pulito”
  */
 export function logout() {
-  localStorage.removeItem("access_token");
+  clearAuthTokens();
   localStorage.removeItem("active_role_id");
   localStorage.removeItem("active_role_name");
   hardGo(ROUTES.login, true);
