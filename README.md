@@ -125,3 +125,17 @@ For the backend part you can use the VSCode debugger using this configuration:
 }
 
 running it from the backend folder
+
+running it from the backend folder
+
+## Configuration
+
+The backend reads settings from environment variables and falls back to `backend/cfg/appconf.cfg`.
+Recommended variables:
+
+- `DATABASE_URL` (required, or set `cfg/appconf.cfg`)
+- `JWT_SECRET` (required for production)
+- `JWT_ALGORITHM` (default: `HS256`)
+- `ACCESS_TOKEN_EXPIRE_MINUTES` (default: `60`)
+- `REFRESH_TOKEN_EXPIRE_DAYS` (default: `14`)
+- `CORS_ALLOW_ORIGINS` (comma-separated list, default: `*`)

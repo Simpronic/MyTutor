@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status,Query
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -114,7 +114,6 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
     """
     Verifica password in chiaro contro hash Argon2.
     """
-    print(hash_password("123"))
     try:
         return pwd_hasher.verify(password_hash, plain_password)
     except VerifyMismatchError:
@@ -183,19 +182,30 @@ def get_my_roles(user: Utente = Depends(get_current_user)) -> UserRolesResponse:
     # user.ruoli è già definito in Utente
     return UserRolesResponse(roles=user.ruoli)
 
-@router.get("/coutries", response_model= List[PaeseResponse])
+@router.get("/countries", response_model=List[PaeseResponse])
+@router.get("/coutries", response_model=List[PaeseResponse], include_in_schema=False)
 def get_countries(db: Session = Depends(get_db)) -> List[PaeseResponse]:
-     paesi = db.query(Paese.id,
-                      Paese.nome,
-                      Paese.iso2,
-                      Paese.iso3,
-                      Paese.iso_numeric
-                      ).filter(Paese.attivo == 1).all()
-     return [PaeseResponse( id=r.id,
-                            nome=r.nome,
-                            iso2=r.iso2,
-                            iso3=r.iso3,
-                            iso_numeric=r.iso_numeric) for r in paesi]
+    paesi = (
+            db.query(
+                Paese.id,
+                Paese.nome,
+                Paese.iso2,
+                Paese.iso3,
+                Paese.iso_numeric,
+            )
+            .filter(Paese.attivo == 1)
+            .all()
+        )
+    return [
+        PaeseResponse(
+            id=r.id,
+            nome=r.nome,
+            iso2=r.iso2,
+            iso3=r.iso3,
+            iso_numeric=r.iso_numeric,
+        )
+        for r in paesi
+    ]
     
 
 @router.get("/me/permissions", response_model=UserPermissionResponse)
@@ -207,7 +217,7 @@ def get_my_permissions(user: Utente = Depends(get_current_user)) -> UserPermissi
     return UserPermissionResponse(permissions=list(permissions_by_id.values()))
 
 @router.get("/permissions_for_role", response_model=UserPermissionResponse)
-def get_my_roles(
+def get_permissions_for_role(
     user: Utente = Depends(get_current_user),
     active_role_id: int | None = Header(default=None, alias="X-Active-Role-Id"),
 ) -> UserPermissionResponse:
