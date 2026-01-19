@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registrazione</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="../css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="login-panel register-panel">
+    <h3 class="mb-4 text-center">Registrazione</h3>
+    <form id="registerForm">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username *</label>
+        <input type="text" class="form-control" id="username" placeholder="Scegli un username" required />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email *</label>
+        <input type="email" class="form-control" id="email" placeholder="nome@email.it" required />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password *</label>
+        <input type="password" class="form-control" id="password" placeholder="Crea una password" required />
+      </div>
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Conferma password *</label>
+        <input type="password" class="form-control" id="confirmPassword" placeholder="Ripeti la password" required />
+      </div>
+      <div class="mb-3">
+        <label for="firstName" class="form-label">Nome *</label>
+        <input type="text" class="form-control" id="firstName" placeholder="Mario" required />
+      </div>
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Cognome *</label>
+        <input type="text" class="form-control" id="lastName" placeholder="Rossi" required />
+      </div>
+      <div class="mb-3">
+        <label for="cf" class="form-label">Codice fiscale</label>
+        <input type="text" class="form-control" id="cf" placeholder="RSSMRA80A01H501Z" />
+      </div>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Telefono</label>
+        <input type="tel" class="form-control" id="phone" placeholder="+39 333 123 4567" />
+      </div>
+      <div class="mb-3">
+        <label for="birthDate" class="form-label">Data nascita</label>
+        <input type="date" class="form-control" id="birthDate" />
+      </div>
+      <div class="mb-3">
+        <label for="country" class="form-label">Paese</label>
+        <input type="text" class="form-control" id="country" placeholder="Italia" />
+      </div>
+      <div class="mb-3">
+        <label for="city" class="form-label">Città</label>
+        <input type="text" class="form-control" id="city" placeholder="Milano" />
+      </div>
+      <div class="mb-3">
+        <label for="address" class="form-label">Indirizzo</label>
+        <input type="text" class="form-control" id="address" placeholder="Via Roma 1" />
+      </div>
+      <div class="mb-4">
+        <label for="cap" class="form-label">CAP</label>
+        <input type="text" class="form-control" id="cap" placeholder="20100" />
+      </div>
+      <button type="submit" class="btn access-btn w-100">Crea account</button>
+    </form>
+    <div class="text-center mt-3">
+      <a href="./index.html" class="text-white text-decoration-none">Hai già un account? Accedi</a>
+    </div>
+  </div>
+</body>
+</html>
