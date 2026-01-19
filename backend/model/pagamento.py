@@ -19,7 +19,7 @@ class Pagamento(Base):
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
 
     lezione_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id"))
-    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
+    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("studente.id"), nullable=False)
     tutor_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"))
 
     importo: Mapped[float] = mapped_column(DECIMAL(10, 2), nullable=False)
@@ -35,5 +35,5 @@ class Pagamento(Base):
     created_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     lezione: Mapped[Optional["Lezione"]] = relationship("Lezione", back_populates="pagamenti")
-    studente: Mapped["Utente"] = relationship("Utente", foreign_keys=[studente_id], back_populates="pagamenti_come_studente")
+    studente: Mapped["Studente"] = relationship("Studente", back_populates="pagamenti")
     tutor: Mapped[Optional["Utente"]] = relationship("Utente", foreign_keys=[tutor_id], back_populates="pagamenti_come_tutor")

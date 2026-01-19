@@ -126,8 +126,6 @@ For the backend part you can use the VSCode debugger using this configuration:
 
 running it from the backend folder
 
-running it from the backend folder
-
 ## Configuration
 
 The backend reads settings from environment variables and falls back to `backend/cfg/appconf.cfg`.

@@ -1,9 +1,12 @@
 -- =========================================
 -- MyTutor - Schema DB (MySQL 8+)
--- NO organizzazioni / NO sedi
 -- =========================================
 
+SET FOREIGN_KEY_CHECKS = 0;
 
+SET FOREIGN_KEY_CHECKS = 1;
+
+START TRANSACTION;
 
 -- =========================
 -- ANAGRAFICA / AUTH
@@ -99,7 +102,6 @@ CREATE TABLE ruolo_permesso (
 -- =========================
 -- DIDATTICA
 -- =========================
-
 CREATE TABLE materia (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   nome VARCHAR(200) NOT NULL,
@@ -146,9 +148,8 @@ CREATE TABLE tutor_materia (
 
 
 -- =========================
--- DISPONIBILITÀ / LEZIONI
+-- DISPONIBILITÀ
 -- =========================
-
 CREATE TABLE disponibilita_tutor (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   tutor_id BIGINT UNSIGNED NOT NULL,
@@ -166,11 +167,56 @@ CREATE TABLE disponibilita_tutor (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+-- =========================
+-- STUDENTI (DUPLICABILI PER TUTOR)
+-- =========================
+CREATE TABLE studente (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+  tutor_id BIGINT UNSIGNED NOT NULL, -- ogni "studente" appartiene a 1 tutor (vincolo richiesto)
+
+  nome VARCHAR(100) NOT NULL,
+  cognome VARCHAR(100) NOT NULL,
+
+  email VARCHAR(254) NULL,
+  telefono VARCHAR(30) NULL,
+  cf CHAR(16) NULL,
+  data_nascita DATE NULL,
+
+  citta VARCHAR(120) NULL,
+  indirizzo VARCHAR(255) NULL,
+  cap VARCHAR(10) NULL,
+  paese CHAR(2) NULL,
+
+  attivo TINYINT(1) NOT NULL DEFAULT 1,
+
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+
+  KEY idx_studente_tutor (tutor_id),
+  KEY idx_studente_cognome_nome (cognome, nome),
+
+  -- Questi due UNIQUE evitano duplicati "dentro lo stesso tutor",
+  -- ma permettono duplicazione tra tutor diversi.
+  UNIQUE KEY uq_studente_tutor_email (tutor_id, email),
+  UNIQUE KEY uq_studente_tutor_cf (tutor_id, cf),
+
+  CONSTRAINT fk_studente_tutor FOREIGN KEY (tutor_id)
+    REFERENCES utente(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =========================
+-- LEZIONI
+-- =========================
 CREATE TABLE lezione (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 
   tutor_id BIGINT UNSIGNED NOT NULL,
-  studente_id BIGINT UNSIGNED NOT NULL,
 
   materia_id BIGINT UNSIGNED NOT NULL,
   argomento_id BIGINT UNSIGNED NULL,
@@ -188,28 +234,49 @@ CREATE TABLE lezione (
   note TEXT NULL,
   note_private TEXT NULL,
   luogo ENUM('remoto','presenza') NOT NULL DEFAULT 'remoto',
+
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   PRIMARY KEY (id),
+
   KEY idx_lezione_tutor_data (tutor_id, data_inizio),
-  KEY idx_lezione_studente_data (studente_id, data_inizio),
   KEY idx_lezione_materia (materia_id),
   KEY idx_lezione_stato (stato),
 
   CONSTRAINT fk_lezione_tutor FOREIGN KEY (tutor_id)
     REFERENCES utente(id)
     ON DELETE RESTRICT,
-  CONSTRAINT fk_lezione_studente FOREIGN KEY (studente_id)
-    REFERENCES utente(id)
-    ON DELETE RESTRICT,
+
   CONSTRAINT fk_lezione_materia FOREIGN KEY (materia_id)
     REFERENCES materia(id)
     ON DELETE RESTRICT,
+
   CONSTRAINT fk_lezione_argomento FOREIGN KEY (argomento_id)
     REFERENCES argomento(id)
     ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Partecipanti: una lezione può avere N studenti (min 1 gestito in app o con trigger)
+CREATE TABLE lezione_partecipante (
+  lezione_id BIGINT UNSIGNED NOT NULL,
+  studente_id BIGINT UNSIGNED NOT NULL,
+
+  presenza ENUM('previsto','presente','assente','no_show') NOT NULL DEFAULT 'previsto',
+  note TEXT NULL,
+
+  PRIMARY KEY (lezione_id, studente_id),
+  KEY idx_lp_studente (studente_id),
+
+  CONSTRAINT fk_lp_lezione FOREIGN KEY (lezione_id)
+    REFERENCES lezione(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_lp_studente FOREIGN KEY (studente_id)
+    REFERENCES studente(id)
+    ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE lezione_stato_storia (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -234,11 +301,13 @@ CREATE TABLE lezione_stato_storia (
 -- =========================
 -- PAGAMENTI
 -- =========================
-
 CREATE TABLE pagamento (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   lezione_id BIGINT UNSIGNED NULL,
+
+  -- MODIFICA: ora punta a studente(id) e non più a utente(id)
   studente_id BIGINT UNSIGNED NOT NULL,
+
   tutor_id BIGINT UNSIGNED NULL,
 
   importo DECIMAL(10,2) NOT NULL,
@@ -256,17 +325,21 @@ CREATE TABLE pagamento (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   PRIMARY KEY (id),
+
   KEY idx_pag_lezione (lezione_id),
   KEY idx_pag_studente (studente_id),
   KEY idx_pag_tutor (tutor_id),
   KEY idx_pag_stato (stato),
+  KEY idx_pag_tutor_studente (tutor_id, studente_id),
 
   CONSTRAINT fk_pag_lezione FOREIGN KEY (lezione_id)
     REFERENCES lezione(id)
     ON DELETE SET NULL,
+
   CONSTRAINT fk_pag_studente FOREIGN KEY (studente_id)
-    REFERENCES utente(id)
+    REFERENCES studente(id)
     ON DELETE RESTRICT,
+
   CONSTRAINT fk_pag_tutor FOREIGN KEY (tutor_id)
     REFERENCES utente(id)
     ON DELETE SET NULL
@@ -276,7 +349,6 @@ CREATE TABLE pagamento (
 -- =========================
 -- NOTE
 -- =========================
-
 CREATE TABLE utente_note (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   utente_id BIGINT UNSIGNED NOT NULL,
@@ -292,12 +364,10 @@ CREATE TABLE utente_note (
   CONSTRAINT fk_un_utente FOREIGN KEY (utente_id)
     REFERENCES utente(id)
     ON DELETE CASCADE,
+
   CONSTRAINT fk_un_creato_da FOREIGN KEY (creato_da)
     REFERENCES utente(id)
     ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
-
-
-

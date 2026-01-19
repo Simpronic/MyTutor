@@ -11,6 +11,13 @@ Enum "lezione_luogo_enum" {
   "presenza"
 }
 
+Enum "lezione_partecipante_presenza_enum" {
+  "previsto"
+  "presente"
+  "assente"
+  "no_show"
+}
+
 Enum "lezione_stato_storia_da_stato_enum" {
   "prenotata"
   "confermata"
@@ -48,6 +55,22 @@ Enum "utente_note_tipo_enum" {
   "pagamento"
   "profilo"
   "altro"
+}
+
+Table "paese" {
+  "id" BIGINT [pk, not null, increment]
+  "nome" VARCHAR(100) [not null]
+  "iso2" CHAR(2) [not null]
+  "iso3" CHAR(3)
+  "iso_numeric" CHAR(3)
+  "attivo" TINYINT(1) [not null, default: 1]
+  "created_at" TIMESTAMP [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMP [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    iso2 [unique, name: "uq_paese_iso2"]
+    nome [unique, name: "uq_paese_nome"]
+  }
 }
 
 Table "utente" {
@@ -176,10 +199,34 @@ Table "disponibilita_tutor" {
   }
 }
 
+Table "studente" {
+  "id" BIGINT [pk, not null, increment]
+  "tutor_id" BIGINT [not null]
+  "nome" VARCHAR(100) [not null]
+  "cognome" VARCHAR(100) [not null]
+  "email" VARCHAR(254)
+  "telefono" VARCHAR(30)
+  "cf" CHAR(16)
+  "data_nascita" DATE
+  "citta" VARCHAR(120)
+  "indirizzo" VARCHAR(255)
+  "cap" VARCHAR(10)
+  "paese" CHAR(2)
+  "attivo" TINYINT(1) [not null, default: 1]
+  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    tutor_id [name: "idx_studente_tutor"]
+    (cognome, nome) [name: "idx_studente_cognome_nome"]
+    (tutor_id, email) [unique, name: "uq_studente_tutor_email"]
+    (tutor_id, cf) [unique, name: "uq_studente_tutor_cf"]
+  }
+}
+
 Table "lezione" {
   "id" BIGINT [pk, not null, increment]
   "tutor_id" BIGINT [not null]
-  "studente_id" BIGINT [not null]
   "materia_id" BIGINT [not null]
   "argomento_id" BIGINT
   "data_inizio" DATETIME [not null]
@@ -196,9 +243,20 @@ Table "lezione" {
 
   Indexes {
     (tutor_id, data_inizio) [name: "idx_lezione_tutor_data"]
-    (studente_id, data_inizio) [name: "idx_lezione_studente_data"]
     materia_id [name: "idx_lezione_materia"]
     stato [name: "idx_lezione_stato"]
+  }
+}
+
+Table "lezione_partecipante" {
+  "lezione_id" BIGINT [not null]
+  "studente_id" BIGINT [not null]
+  "presenza" lezione_partecipante_presenza_enum [not null, default: 'previsto']
+  "note" TEXT
+
+  Indexes {
+    (lezione_id, studente_id) [pk]
+    studente_id [name: "idx_lp_studente"]
   }
 }
 
@@ -236,6 +294,7 @@ Table "pagamento" {
     studente_id [name: "idx_pag_studente"]
     tutor_id [name: "idx_pag_tutor"]
     stato [name: "idx_pag_stato"]
+    (tutor_id, studente_id) [name: "idx_pag_tutor_studente"]
   }
 }
 
@@ -271,13 +330,17 @@ Ref "fk_tm_materia":"materia"."id" < "tutor_materia"."materia_id" [delete: casca
 
 Ref "fk_disp_tutor":"utente"."id" < "disponibilita_tutor"."tutor_id" [delete: cascade]
 
-Ref "fk_lezione_tutor":"utente"."id" < "lezione"."tutor_id" [delete: restrict]
+Ref "fk_studente_tutor":"utente"."id" < "studente"."tutor_id" [delete: cascade]
 
-Ref "fk_lezione_studente":"utente"."id" < "lezione"."studente_id" [delete: restrict]
+Ref "fk_lezione_tutor":"utente"."id" < "lezione"."tutor_id" [delete: restrict]
 
 Ref "fk_lezione_materia":"materia"."id" < "lezione"."materia_id" [delete: restrict]
 
 Ref "fk_lezione_argomento":"argomento"."id" < "lezione"."argomento_id" [delete: set null]
+
+Ref "fk_lp_lezione":"lezione"."id" < "lezione_partecipante"."lezione_id" [delete: cascade]
+
+Ref "fk_lp_studente":"studente"."id" < "lezione_partecipante"."studente_id" [delete: restrict]
 
 Ref "fk_lss_lezione":"lezione"."id" < "lezione_stato_storia"."lezione_id" [delete: cascade]
 
@@ -285,7 +348,7 @@ Ref "fk_lss_cambiato_da":"utente"."id" < "lezione_stato_storia"."cambiato_da" [d
 
 Ref "fk_pag_lezione":"lezione"."id" < "pagamento"."lezione_id" [delete: set null]
 
-Ref "fk_pag_studente":"utente"."id" < "pagamento"."studente_id" [delete: restrict]
+Ref "fk_pag_studente":"studente"."id" < "pagamento"."studente_id" [delete: restrict]
 
 Ref "fk_pag_tutor":"utente"."id" < "pagamento"."tutor_id" [delete: set null]
 

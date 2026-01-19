@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from sqlalchemy import ForeignKey, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.mysql import BIGINT, VARCHAR, DATETIME, DATE, TINYINT
+from sqlalchemy.dialects.mysql import BIGINT, VARCHAR, DATETIME, DATE, TINYINT, SMALLINT
 
 from backend.db.base import Base
 
@@ -81,22 +81,12 @@ class Utente(Base):
         back_populates="tutor",
         lazy="selectin",
     )
-
-    lezioni_come_studente: Mapped[List["Lezione"]] = relationship(
-        "Lezione",
-        foreign_keys="Lezione.studente_id",
-        back_populates="studente",
+    studenti: Mapped[List["Studente"]] = relationship(
+        "Studente",
+        back_populates="tutor",
+        cascade="all, delete-orphan",
         lazy="selectin",
     )
-
-    # pagamenti
-    pagamenti_come_studente: Mapped[List["Pagamento"]] = relationship(
-        "Pagamento",
-        foreign_keys="Pagamento.studente_id",
-        back_populates="studente",
-        lazy="selectin",
-    )
-
     pagamenti_come_tutor: Mapped[List["Pagamento"]] = relationship(
         "Pagamento",
         foreign_keys="Pagamento.tutor_id",
@@ -133,17 +123,7 @@ class UtenteRuolo(Base):
     __tablename__ = "utente_ruolo"
 
     utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), primary_key=True)
-    ruolo_id: Mapped[int] = mapped_column(
-        # FK verso ruolo.id SMALLINT unsigned
-        # (MySQL accetta il mismatch numerico, ma teniamolo coerente)
-        # NB: se vuoi rigidità totale, usa SMALLINT(unsigned=True)
-        # qui uso SMALLINT coerente:
-        # mapped_column(SMALLINT(unsigned=True), ...)
-        # ma serve import; per semplicità:
-        BIGINT(unsigned=True),
-        ForeignKey("ruolo.id"),
-        primary_key=True,
-    )
+    ruolo_id: Mapped[int] = mapped_column(SMALLINT(unsigned=True), ForeignKey("ruolo.id"), primary_key=True)
     assegnato_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     utente: Mapped["Utente"] = relationship("Utente", back_populates="ruoli_link")

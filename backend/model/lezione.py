@@ -18,7 +18,6 @@ class Lezione(Base):
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
 
     tutor_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
-    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
 
     materia_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("materia.id"), nullable=False)
     argomento_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("argomento.id"))
@@ -55,7 +54,6 @@ class Lezione(Base):
 
 
     tutor: Mapped["Utente"] = relationship("Utente", foreign_keys=[tutor_id], back_populates="lezioni_come_tutor")
-    studente: Mapped["Utente"] = relationship("Utente", foreign_keys=[studente_id], back_populates="lezioni_come_studente")
 
     materia: Mapped["Materia"] = relationship("Materia", back_populates="lezioni")
     argomento: Mapped[Optional["Argomento"]] = relationship("Argomento", back_populates="lezioni")
@@ -68,3 +66,16 @@ class Lezione(Base):
     )
 
     pagamenti: Mapped[List["Pagamento"]] = relationship("Pagamento", back_populates="lezione", lazy="selectin")
+    partecipanti_link: Mapped[List["LezionePartecipante"]] = relationship(
+        "LezionePartecipante",
+        back_populates="lezione",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+
+    partecipanti: Mapped[List["Studente"]] = relationship(
+        "Studente",
+        secondary="lezione_partecipante",
+        viewonly=True,
+        lazy="selectin",
+    )

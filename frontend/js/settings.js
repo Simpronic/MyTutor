@@ -76,29 +76,17 @@ async function setupPermissions() {
 
   const usersTab = document.getElementById("users-tab");
   const usersPane = document.getElementById("users");
-  const accessMessage = document.getElementById("accessMessage");
   const settingsContent = document.getElementById("settingsContent");
 
   if (canManageUsers) {
     usersTab.classList.remove("d-none");
     usersPane.classList.remove("d-none");
-    accessMessage.classList.add("d-none");
     return;
   }
 
   usersTab.classList.add("d-none");
   usersPane.classList.add("d-none");
 
-  if (isLimitedUser) {
-    accessMessage.textContent =
-      "Sei loggato come tutor o studente: puoi aggiornare solo le tue informazioni e la password.";
-    accessMessage.classList.remove("d-none");
-    return;
-  }
-
-  accessMessage.textContent =
-    "Non hai i permessi necessari per gestire gli utenti. Verifica i tuoi privilegi.";
-  accessMessage.classList.remove("d-none");
   settingsContent.classList.remove("d-none");
 }
 

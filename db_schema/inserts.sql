@@ -6,8 +6,7 @@ START TRANSACTION;
 INSERT INTO ruolo (nome, descrizione) VALUES
   ('SYSTEM_ADMIN', 'Amministratore globale del sistema'),
   ('STAFF',        'Staff operativo'),
-  ('TUTOR',        'Tutor/Insegnante'),
-  ('STUDENTE',     'Studente')
+  ('TUTOR',        'Tutor/Insegnante')
 ON DUPLICATE KEY UPDATE
   descrizione = VALUES(descrizione);
 
@@ -89,18 +88,6 @@ WHERE r.nome = 'TUTOR'
     'LESSON_CONFIRM','LESSON_MARK_DONE',
     'PAYMENT_READ',
     'NOTE_READ','NOTE_CREATE'
-  );
-
-INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
-SELECT r.id, p.id
-FROM ruolo r
-JOIN permesso p
-WHERE r.nome = 'STUDENTE'
-  AND p.codice IN (
-    'SUBJECT_READ','TOPIC_READ',
-    'LESSON_READ','LESSON_CREATE','LESSON_CANCEL',
-    'PAYMENT_READ','PAYMENT_CREATE',
-    'NOTE_READ'
   );
 
 -- Utente superadmin (evita errore se già esiste id=1 o email unica)

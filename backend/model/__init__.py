@@ -13,9 +13,11 @@ from backend.model.argomento import Argomento
 from backend.model.disponibilita_tutor import DisponibilitaTutor
 
 from backend.model.lezione import Lezione
+from backend.model.lezione_partecipante import LezionePartecipante
 from backend.model.lezione_stato_storia import LezioneStatoStoria
 
 from backend.model.pagamento import Pagamento
+from backend.model.studente import Studente
 from backend.model.utente_note import UtenteNote
 from backend.model.paese import Paese
 
@@ -39,9 +41,11 @@ __all__ = [
     # disponibilità / lezioni
     "DisponibilitaTutor",
     "Lezione",
+    "LezionePartecipante",
     "LezioneStatoStoria",
 
     # pagamenti / note
     "Pagamento",
+    "Studente",
     "UtenteNote",
 ]
