@@ -4,3 +4,4 @@ sqlalchemy
 pymysql
 argon2-cffi
 python-jose[cryptography]
+pydantic[email]

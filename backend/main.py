@@ -5,6 +5,9 @@ from backend.controllers.auth_controller import router as auth_router
 from backend.controllers.UserManagement_controller import (
     router as user_management_router,
 )
+from backend.controllers.registration_controller import(
+    router as registration_router
+)
 
 settings = get_settings()
 app = FastAPI()
@@ -20,3 +23,4 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(user_management_router)
+app.include_router(registration_router)

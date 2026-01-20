@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="../css/bootstrap.min.css" rel="stylesheet" />
   <link href="../css/style.css" rel="stylesheet" />
+  <script type="module" defer src="../js/register.js"></script>
 </head>
 <body>
   <div class="login-panel register-panel">
     <h3 class="mb-4 text-center">Registrazione</h3>
+    <div id="registerMessage" class="alert d-none" role="alert"></div>
     <form id="registerForm">
       <div class="mb-3">
         <label for="username" class="form-label">Username *</label>
@@ -49,7 +51,9 @@
       </div>
       <div class="mb-3">
         <label for="country" class="form-label">Paese</label>
-        <input type="text" class="form-control" id="country" placeholder="Italia" />
+        <select id="country" class="form-control" aria-label="Seleziona un paese">
+          <option value="" selected disabled>Seleziona un paese</option>
+        </select>
       </div>
       <div class="mb-3">
         <label for="city" class="form-label">Città</label>
