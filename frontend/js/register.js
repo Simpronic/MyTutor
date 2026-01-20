@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_AUTH_URL_BASE } from "./api.js";
+import { navigate } from "./router.js";
 
 const REGISTER_URL = `${API_BASE_URL}/registration/registerUser`;
 
@@ -46,7 +47,7 @@ form.addEventListener("submit", async (event) => {
   const confirmPassword = document.getElementById("confirmPassword").value.trim();
   const cfValue = document.getElementById("cf").value.trim();
 
-  if (length(password.trim()) <= 8 || length(password.trim()) > 200) {
+  if ((password.trim()).length <= 8 || (password.trim()).length > 200) {
     setMessage("La password non rientra nella dimensione, deve essere almeno 8 caratteri ma non più di 200 caratteri", "warning");
     return;
   }
@@ -92,6 +93,7 @@ form.addEventListener("submit", async (event) => {
 
     setMessage("Registrazione completata. Puoi accedere con le tue credenziali.", "success");
     form.reset();
+    navigate("login", { requireAuth: false });
   } catch (error) {
     setMessage("Errore di rete durante la registrazione.", "danger");
   }

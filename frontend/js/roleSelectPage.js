@@ -19,8 +19,7 @@ function clearError() {
 }
 
 async function loadRoles() {
-  clearError();
-
+  clearError();  
   roleSelect.innerHTML = `<option value="" selected disabled>Loading roles...</option>`;
   accessBtn.disabled = true;
 
@@ -36,6 +35,15 @@ async function loadRoles() {
 
     const data = await res.json();
 
+    console.log(data.roles)
+     if (data.roles.length === 1) {
+      const [role] = data.roles;
+      localStorage.setItem("active_role_id", String(role.id));
+      localStorage.setItem("active_role_name", role.nome || "");
+      navigate("main", { requireAuth: true, requireRole: true });
+      return;
+    }    
+    
     if (!data.roles || data.roles.length === 0) {
       roleSelect.innerHTML = `<option value="" selected disabled>No roles available</option>`;
       showError("Nessun ruolo associato a questo utente.");
