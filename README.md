@@ -20,6 +20,21 @@ Il software può essere scaricato e utilizzato installandolo su un **proprio ser
 
 ---
 
+## Dipendenze e ambiente
+
+- **Python**: 3.10+ (consigliato per FastAPI e dipendenze attuali)
+- **Backend**: vedi `requirements.txt`
+  - fastapi
+  - uvicorn
+  - sqlalchemy
+  - pymysql
+  - argon2-cffi
+  - python-jose[cryptography]
+  - pydantic[email]
+- **Frontend**: HTML/CSS/JS statico (nessun build tool richiesto)
+
+---
+
 ## Personalizzazione e Modifica
 
 Il software è **liberamente modificabile** in base alle proprie esigenze.  
@@ -68,6 +83,21 @@ The software can be downloaded and deployed on your **own server**, giving users
 
 ---
 
+## Dependencies & environment
+
+- **Python**: 3.10+ (recommended for FastAPI and current dependencies)
+- **Backend**: see `requirements.txt`
+  - fastapi
+  - uvicorn
+  - sqlalchemy
+  - pymysql
+  - argon2-cffi
+  - python-jose[cryptography]
+  - pydantic[email]
+- **Frontend**: static HTML/CSS/JS (no build tool required)
+
+---
+
 ## Customization & Modification
 
 The software is **freely modifiable** according to your own requirements.  
@@ -93,24 +123,7 @@ The **only requirement** is that proper **attribution to the original author** i
 This software is provided "as is", without warranty of any kind.  
 Use it at your own risk.
 
-
-# TESTING GUIDLINES:
-
-To properly test the code locally, you can start a python local webserver with the following command
-
-python -m http.server 5500 
-
-This command should bu run into MyTutor folder and then you can reference all the html pages.
-
-For the backend part you can use the VSCode debugger using this configuration: 
-
-{
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
+@@ -114,26 +144,26 @@ For the backend part you can use the VSCode debugger using this configuration:
             "name": "Python Debugger: FastAPI",
             "type": "debugpy",
             "request": "launch",
@@ -125,15 +138,3 @@ For the backend part you can use the VSCode debugger using this configuration:
 }
 
 running it from the backend folder
-
-## Configuration
-
-The backend reads settings from environment variables and falls back to `backend/cfg/appconf.cfg`.
-Recommended variables:
-
-- `DATABASE_URL` (required, or set `cfg/appconf.cfg`)
-- `JWT_SECRET` (required for production)
-- `JWT_ALGORITHM` (default: `HS256`)
-- `ACCESS_TOKEN_EXPIRE_MINUTES` (default: `60`)
-- `REFRESH_TOKEN_EXPIRE_DAYS` (default: `14`)
-- `CORS_ALLOW_ORIGINS` (comma-separated list, default: `*`)
