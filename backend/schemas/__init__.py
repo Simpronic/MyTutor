@@ -1,0 +1,1 @@
+"""Schema configuration for the backend, mostly controllers."""

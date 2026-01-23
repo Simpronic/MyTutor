@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import get_settings
 from backend.controllers.auth_controller import router as auth_router
-from backend.controllers.UserManagement_controller import (
+from backend.controllers.userManagement_controller import (
     router as user_management_router,
 )
 from backend.controllers.registration_controller import(
