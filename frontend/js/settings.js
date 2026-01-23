@@ -127,6 +127,25 @@ function showAlert(message, type = "info") {
   window.alert(message);
 }
 
+function updateStoredUser(payload) {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) return;
+
+  let currentUser;
+  try {
+    currentUser = JSON.parse(storedUser);
+  } catch (error) {
+    console.warn("Utente in localStorage non valido:", error);
+    return;
+  }
+
+  if (!currentUser || typeof currentUser !== "object") return;
+
+  const updatedUser = { ...currentUser, ...payload };
+  localStorage.setItem("user", JSON.stringify(updatedUser));
+}
+
+
 async function loadCountries() {
   const countrySelect = document.querySelector(selectors.country);
   if (!countrySelect) return;
@@ -195,6 +214,7 @@ async function handleSaveInfo() {
     const timestamp = data?.update_timestamp
       ? ` (aggiornato: ${data.update_timestamp})`
       : "";
+    updateStoredUser(payload);
     showAlert(`Impostazioni aggiornate con successo${timestamp}.`, "success");
   } catch (error) {
     showAlert(error.message || "Errore durante l'aggiornamento.", "error");
