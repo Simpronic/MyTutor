@@ -3,18 +3,14 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
-from pydantic import BaseModel, Field
+
 from sqlalchemy.orm import Session
 
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
-
 from backend.db.base import get_db
-from backend.model import Utente, Permesso, Paese, Ruolo
+from backend.model import Utente, Permesso, Paese
 from typing import List, Dict
 
 from backend.security.permissions import user_permissions
-
 from backend.security.auth import (
     create_access_token,
     create_refresh_token,
@@ -22,106 +18,14 @@ from backend.security.auth import (
     get_current_user,
 )
 
+from backend.security.password import(
+    verify_password
+)
+
+from backend.schemas.auth_controller_schemas import *
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-# Argon2 hasher (config di default sicura)
-pwd_hasher = PasswordHasher()
-
-
-# ----------- SCHEMI Pydantic -----------
-
-class PaeseResponse(BaseModel):
-    id: int
-    nome: str
-    iso2: str = Field(..., min_length=2, max_length=2)
-    iso3: str | None = Field(None, min_length=3, max_length=3)
-    iso_numeric: str | None = Field(None, min_length=3, max_length=3)
-
-    class Config:
-        from_attributes = True    # Pydantic v2
-
-
-class LoginRequest(BaseModel):
-    identifier: str = Field(..., min_length=1, max_length=254, description="Username oppure email")
-    password: str = Field(..., min_length=1, max_length=255)
-
-
-class UserPublic(BaseModel):
-    id: int
-    username: str
-    email: str
-    nome: str
-    cognome: str
-    attivo: bool
-
-    class Config:
-        from_attributes = True
-
-
-class LoginResponse(BaseModel):
-    user: UserPublic
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-
-
-
-class RolePublic(BaseModel):
-    id: int
-    nome: str
-    descrizione: str | None = None
-
-    class Config:
-        from_attributes = True
-
-class UserRolesResponse(BaseModel):
-    roles: List[RolePublic]
-
-class UserPermission(BaseModel): 
-    id: int 
-    codice: str
-    descrizione: str | None = None
-
-    class Config:
-        from_attributes = True
-
-
-class UserPermissionResponse(BaseModel): 
-    permissions: List[UserPermission]
-
-class RefreshTokenRequest(BaseModel):
-    refresh_token: str = Field(..., min_length=1)
-
-class RefreshTokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-
-
-
-# ----------- UTILS PASSWORD -----------
-
-def hash_password(plain_password: str) -> str:
-    """
-    Crea hash Argon2 da password in chiaro.
-    (Usalo in fase di registrazione o seed DB)
-    """
-    return pwd_hasher.hash(plain_password)
-
-
-def verify_password(plain_password: str, password_hash: str) -> bool:
-    """
-    Verifica password in chiaro contro hash Argon2.
-    """
-    try:
-        return pwd_hasher.verify(password_hash, plain_password)
-    except VerifyMismatchError:
-        return False
-    except Exception:
-        # hash corrotto o formato sconosciuto
-        return False
-
 
 def is_email(s: str) -> bool:
     return "@" in s and "." in s

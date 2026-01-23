@@ -1,47 +1,19 @@
 from __future__ import annotations
 
-from datetime import date
-
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr, Field
-from sqlalchemy.orm import Session
 
-from argon2 import PasswordHasher
+from sqlalchemy.orm import Session
 
 from backend.db.base import get_db
 from backend.model import Ruolo, Utente, UtenteRuolo
 
+from backend.schemas.registration_controller_schemas import * 
+
+from backend.security.password import(
+    hash_password
+)
+
 router = APIRouter(prefix="/registration", tags=["registration"])
-
-pwd_hasher = PasswordHasher()
-
-class RegistrationRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=64)
-    email: EmailStr
-    password: str = Field(..., min_length=8, max_length=255)
-    nome: str = Field(..., min_length=1, max_length=100)
-    cognome: str = Field(..., min_length=1, max_length=100)
-
-    cf: str | None = Field(None, min_length=16, max_length=16)
-    telefono: str | None = Field(None, max_length=30)
-    data_nascita: date | None = None
-
-    citta: str | None = Field(None, max_length=120)
-    indirizzo: str | None = Field(None, max_length=255)
-    cap: str | None = Field(None, max_length=10)
-    paese: str | None = Field(None, min_length=2, max_length=2)
-
-class RegistrationResponse(BaseModel):
-    id: int
-    username: str
-    email: EmailStr
-    ruolo: str
-
-    class Config:
-        from_attributes = True
-
-def hash_password(plain_password: str) -> str:
-    return pwd_hasher.hash(plain_password)
 
 @router.post("/registerUser", response_model=RegistrationResponse, status_code=status.HTTP_201_CREATED)
 def register_user(payload: RegistrationRequest, db: Session = Depends(get_db)) -> RegistrationResponse:
