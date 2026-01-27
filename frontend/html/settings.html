@@ -178,9 +178,18 @@
 
           <div class="d-flex flex-wrap gap-2">
             <button type="button" class="btn btn-outline-primary" id="load-users">Visualizza utenti</button>
-            <button type="button" class="btn btn-outline-success">Crea utente</button>
+            <button
+              type="button"
+              class="btn btn-outline-success"
+              id="create-user-button"
+              data-bs-toggle="modal"
+              data-bs-target="#createUserModal"
+            >
+              Crea utente
+            </button>
             <button type="button" class="btn btn-outline-warning">Aggiorna utente</button>
-            <button type="button" class="btn btn-outline-danger">Disattiva utente</button>
+            <button type="button" class="btn btn-secondary">Disattiva utente</button>
+            <button type="button" class="btn btn-outline-danger">Elimina utente</button>
           </div>
           
           <div class="mt-4">
@@ -204,5 +213,6 @@
       </div>
     </div>
   </main>
+  <div id="create-user-modal-root"></div>
 </body>
 </html>

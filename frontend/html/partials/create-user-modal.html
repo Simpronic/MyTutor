@@ -1,0 +1,121 @@
+<div
+  class="modal fade"
+  id="createUserModal"
+  tabindex="-1"
+  aria-labelledby="createUserModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createUserModalLabel">Crea nuovo utente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <form id="create-user-form" class="row g-3">
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-username">Username *</label>
+              <input class="form-control-settings" id="create-username" type="text" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-email">Email *</label>
+              <input class="form-control-settings" id="create-email" type="email" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-first-name">Nome *</label>
+              <input class="form-control-settings" id="create-first-name" type="text" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-last-name">Cognome *</label>
+              <input class="form-control-settings" id="create-last-name" type="text" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-cf">Codice fiscale</label>
+              <input class="form-control-settings" id="create-cf" type="text" maxlength="16" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-phone">Telefono</label>
+              <input class="form-control-settings" id="create-phone" type="tel" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-birth">Data di nascita</label>
+              <input class="form-control-settings" id="create-birth" type="date" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-country">Paese</label>
+              <select class="form-control-settings" id="create-country">
+                <option value="">Seleziona un paese</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-city">Città</label>
+              <input class="form-control-settings" id="create-city" type="text" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-address">Indirizzo</label>
+              <input class="form-control-settings" id="create-address" type="text" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="create-cap">CAP</label>
+              <input class="form-control-settings" id="create-cap" type="text" />
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="settings-field">
+              <label class="form-label settings-label">Ruoli</label>
+              <div class="border rounded p-2" id="create-roles">
+                <div class="text-muted">Caricamento ruoli...</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="generated-password">Password generata</label>
+              <div>
+                <div class="input-group w-100">
+                  <input
+                    class="form-control-settings"
+                    id="generated-password"
+                    type="text"
+                    readonly
+                    required
+                    placeholder="Genera una password"
+                  />
+                  <button class="btn btn-outline-secondary" type="button" id="toggle-generated-password">
+                    Genera
+                  </button>
+                </div>
+                <small class="text-muted">Genera la password prima di salvare.</small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="button" class="btn btn-primary" id="submit-create-user">Crea utente</button>
+      </div>
+    </div>
+  </div>
+</div>

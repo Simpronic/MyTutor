@@ -1,5 +1,6 @@
 import { API_AUTH_URL_BASE,API_USER_MANAGEMENT_URL_BASE, authFetch } from "./api.js";
 import { enforceGuards } from "./router.js";
+import { setupCreateUserModal } from "./createUserModal.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
 
@@ -107,7 +108,24 @@ const selectors = {
   iban: "#iban",
   loadUsers: "#load-users",
   usersList: "#users-list",
-  selectedUser: "#selected-user"
+  selectedUser: "#selected-user",
+  createUserModal: "#createUserModal",
+  createUserForm: "#create-user-form",
+  createUserSubmit: "#submit-create-user",
+  createUserRoles: "#create-roles",
+  createUsername: "#create-username",
+  createEmail: "#create-email",
+  createFirstName: "#create-first-name",
+  createLastName: "#create-last-name",
+  createCf: "#create-cf",
+  createPhone: "#create-phone",
+  createBirth: "#create-birth",
+  createCountry: "#create-country",
+  createCity: "#create-city",
+  createAddress: "#create-address",
+  createCap: "#create-cap",
+  generatedPassword: "#generated-password",
+  toggleGeneratedPassword: "#toggle-generated-password"
 };
 
 function formatUserLabel(user) {
@@ -217,10 +235,8 @@ function updateStoredUser(payload) {
 }
 
 
-async function loadCountries() {
-  const countrySelect = document.querySelector(selectors.country);
-  if (!countrySelect) return;
-
+async function loadCountries(selectElement) {
+  if (!selectElement) return;
   try {
     const response = await authFetch(`${API_AUTH_URL_BASE}/countries`, {
       method: "GET",
@@ -235,7 +251,7 @@ async function loadCountries() {
       const option = document.createElement("option");
       option.value = country.iso2;
       option.textContent = country.nome;
-      countrySelect.appendChild(option);
+      selectElement.appendChild(option);
     });
   } catch (error) {
     console.warn("Errore nel caricamento paesi:", error);
@@ -342,7 +358,8 @@ function disableUnsupportedFields() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadCountries();
+  const countrySelect = document.querySelector(selectors.country);
+  loadCountries(countrySelect);
   disableUnsupportedFields();
   toggleDisabled(selectors.city, true);
 
@@ -372,4 +389,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   
+  setupCreateUserModal({
+    authFetch,
+    userManagementBaseUrl: API_USER_MANAGEMENT_URL_BASE,
+    loadCountries,
+    loadUsers,
+    getValue,
+    showAlert,
+  });
+
 });
