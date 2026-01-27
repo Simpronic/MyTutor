@@ -105,7 +105,78 @@ const selectors = {
   oldPassword: "#currentPassword",
   savePassword: "#psw_change",
   iban: "#iban",
+  loadUsers: "#load-users",
+  usersList: "#users-list",
+  selectedUser: "#selected-user"
 };
+
+function formatUserLabel(user) {
+  const nome = user?.nome || "";
+  const cognome = user?.cognome || "";
+  const username = user?.username ? `(@${user.username})` : "";
+  const email = user?.email ? `• ${user.email}` : "";
+  return `${cognome} ${nome}`.trim() || user?.email || user?.username || "Utente";
+}
+
+function renderUsersList(users) {
+  const list = document.querySelector(selectors.usersList);
+  if (!list) return;
+  list.innerHTML = "";
+
+  if (!Array.isArray(users) || users.length === 0) {
+    const emptyItem = document.createElement("div");
+    emptyItem.className = "list-group-item text-muted";
+    emptyItem.textContent = "Nessun utente trovato.";
+    list.appendChild(emptyItem);
+    return;
+  }
+
+  const sortedUsers = [...users].sort((a, b) => {
+    const aLabel = `${a?.cognome || ""} ${a?.nome || ""}`.trim().toLowerCase();
+    const bLabel = `${b?.cognome || ""} ${b?.nome || ""}`.trim().toLowerCase();
+    return aLabel.localeCompare(bLabel);
+  });
+
+  sortedUsers.forEach((user) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "list-group-item list-group-item-action";
+    button.dataset.userId = user.id;
+    button.textContent = `${formatUserLabel(user)} ${user?.email ? `• ${user.email}` : ""}`.trim();
+    button.addEventListener("click", () => {
+      const active = list.querySelector(".active");
+      if (active) active.classList.remove("active");
+      button.classList.add("active");
+      const selectedUser = document.querySelector(selectors.selectedUser);
+      if (selectedUser) {
+        selectedUser.textContent = `Selezionato: ${formatUserLabel(user)} ${user?.email ? `(${user.email})` : ""}`.trim();
+      }
+      list.dataset.selectedUserId = String(user.id);
+    });
+    list.appendChild(button);
+  });
+}
+
+async function loadUsers() {
+  const list = document.querySelector(selectors.usersList);
+  if (!list) return;
+  list.innerHTML = `<div class="list-group-item text-muted">Caricamento utenti...</div>`;
+
+  try {
+    const response = await authFetch(`${API_USER_MANAGEMENT_URL_BASE}/allUsers`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const users = await response.json();
+    renderUsersList(users);
+  } catch (error) {
+    console.warn("Errore nel caricamento utenti:", error);
+    list.innerHTML = `<div class="list-group-item text-danger">Errore nel caricamento utenti.</div>`;
+  }
+}
+
 
 function getValue(selector) {
   const element = document.querySelector(selector);
@@ -284,4 +355,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (passwordButton) {
     passwordButton.addEventListener("click", handlePasswordChange);
   }
+
+  const loadUsersButton = document.querySelector(selectors.loadUsers);
+  if (loadUsersButton) {
+    loadUsersButton.addEventListener("click", loadUsers);
+  }
+
+  const usersTab = document.getElementById("users-tab");
+  if (usersTab) {
+    let usersLoaded = false;
+    usersTab.addEventListener("shown.bs.tab", () => {
+      if (!usersLoaded) {
+        usersLoaded = true;
+        loadUsers();
+      }
+    });
+  }
+  
 });

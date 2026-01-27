@@ -63,3 +63,26 @@ class PasswordChange(BaseModel):
     new_password: str
     old_password: str
 
+
+class UserFullResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    nome: str
+    cognome: str
+    cf: Optional[str] = None
+    telefono: Optional[str] = None
+    data_nascita: Optional[date] = None
+    citta: Optional[str] = None
+    indirizzo: Optional[str] = None
+    cap: Optional[str] = None
+    paese: Optional[str] = None
+    attivo: bool
+    last_login_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+    ruoli: List[RolesResponse] = []
+
+    class Config:
+        from_attributes = True
+

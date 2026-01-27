@@ -27,10 +27,16 @@ def getAllRoles(
 def add_user(
     payload: UserCreate,
     db: Session = Depends(get_db),
-    _: Utente = Depends(require_permission("user.create")),
+    _: Utente = Depends(require_permission("USER_CREATE")),
 ) -> CreatedUserResponse:
     return user_service.create_user(db,payload)
 
+@router.get("/allUsers",response_model=List[UserFullResponse])
+def getAllUsers(
+    db: Session = Depends(get_db),
+    u: Utente = Depends(require_permission("USER_READ"))
+) -> List[UserFullResponse]:
+    return user_service.getAllUsers(u,db)
 
 @router.patch("/user/pswChange",response_model=UpdateResponse)
 def modifyUser(
@@ -58,7 +64,7 @@ def modifyUser(
 def modifyUser(
     payload: TutorSettingsUpdateRequest,
     db: Session = Depends(get_db),
-    _: Utente = Depends(require_permission("user.user_update"))
+    _: Utente = Depends(require_permission("USER_UPDATE"))
 )-> UpdateResponse:
     pass
 

@@ -13,11 +13,15 @@ from backend.schemas.UserManagement_controller_schemas import (
     TutorSettingsUpdateRequest,
     UpdateResponse,
     UserCreate,
+    UserFullResponse
 )
 from backend.security.password import hash_password, pwd_hasher, verify_password
 from backend.services.user_helpers import ensure_unique_user_fields
 
 
+def getAllUsers(u:Utente,db:Session) -> List[UserFullResponse]:
+    return db.query(Utente).filter(Utente.id != u.id)
+    
 def list_roles(db: Session) -> List[RolesResponse]:
     return db.query(Ruolo).all()
 
