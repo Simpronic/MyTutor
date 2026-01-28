@@ -45,11 +45,11 @@ def create_user(db: Session, payload: UserCreate) -> CreatedUserResponse:
                 detail=f"Ruoli non trovati: {', '.join(missing)}",
             )
 
-    raw_password = secrets.token_urlsafe(12)
+    #raw_password = secrets.token_urlsafe(12)
     user = Utente(
         username=payload.username,
         email=payload.email,
-        password_hash=pwd_hasher.hash(raw_password),
+        password_hash=pwd_hasher.hash(payload.password),
         nome=payload.nome,
         cognome=payload.cognome,
         cf=payload.cf,
@@ -70,7 +70,7 @@ def create_user(db: Session, payload: UserCreate) -> CreatedUserResponse:
     db.commit()
     db.refresh(user)
 
-    return CreatedUserResponse(user=user.username, psw=raw_password)
+    return CreatedUserResponse(user=user.username)
 
 
 def update_password(

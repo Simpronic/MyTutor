@@ -14,6 +14,7 @@ class UserCreate(BaseModel):
     email: str = Field(..., min_length=1, max_length=254)
     nome: str = Field(..., min_length=1, max_length=100)
     cognome: str = Field(..., min_length=1, max_length=100)
+    password: Optional[str] = Field(None, min_length=8, max_length=128)
     cf: Optional[str] = Field(None, max_length=16)
     telefono: Optional[str] = Field(None, max_length=30)
     data_nascita: Optional[datetime] = None
@@ -29,7 +30,6 @@ class UserCreate(BaseModel):
 
 class CreatedUserResponse(BaseModel):
     user: str
-    psw: str
 
 
 class RolesResponse(BaseModel):

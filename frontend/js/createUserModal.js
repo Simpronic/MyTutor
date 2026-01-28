@@ -147,7 +147,7 @@ async function handleCreateUser({
   const citta = getValue(SELECTORS.city);
   const indirizzo = getValue(SELECTORS.address);
   const cap = getValue(SELECTORS.cap);
-  const generatedPassword = getValue(SELECTORS.generatedPassword);
+  const password = getValue(SELECTORS.generatedPassword);
 
   if (!username || !email || !nome || !cognome) {
     showAlert("Compila tutti i campi obbligatori.");
@@ -155,7 +155,7 @@ async function handleCreateUser({
     return;
   }
 
-  if (!generatedPassword) {
+  if (!password) {
     showAlert("Genera una password prima di creare l'utente.");
     if (submitButton) submitButton.disabled = false;
     return;
@@ -179,6 +179,7 @@ async function handleCreateUser({
     email,
     nome,
     cognome,
+    password,
     ruoli: selectedRoles,
   };
 
@@ -207,6 +208,13 @@ async function handleCreateUser({
     }
     showAlert(`Utente creato con successo${data?.user ? `: ${data.user}` : ""}.`, "success");
     await loadUsers();
+    const modalElement = document.querySelector(SELECTORS.modal);
+    if (modalElement && window.bootstrap?.Modal) {
+      const modalInstance =
+        window.bootstrap.Modal.getInstance(modalElement) ||
+        new window.bootstrap.Modal(modalElement);
+      modalInstance.hide();
+    }
   } catch (error) {
     showAlert(error.message || "Errore durante la creazione utente.", "error");
   } finally {
@@ -273,4 +281,17 @@ export async function setupCreateUserModal({
       })
     );
   }
+    const form = document.querySelector(SELECTORS.form);
+    if (form) {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        handleCreateUser({
+          authFetch,
+          userManagementBaseUrl,
+          getValue,
+          showAlert,
+          loadUsers,
+        });
+      });
+    }
 }
