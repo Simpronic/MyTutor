@@ -125,7 +125,8 @@ const selectors = {
   createAddress: "#create-address",
   createCap: "#create-cap",
   generatedPassword: "#generated-password",
-  toggleGeneratedPassword: "#toggle-generated-password"
+  toggleGeneratedPassword: "#toggle-generated-password",
+  toggleCopyPassword: "#toggle-copy-password"
 };
 
 function formatUserLabel(user) {

@@ -17,6 +17,7 @@ const SELECTORS = {
   cap: "#create-cap",
   generatedPassword: "#generated-password",
   toggleGeneratedPassword: "#toggle-generated-password",
+  toggleCopyPassword: "#toggle-copy-password",
 };
 
 async function insertModalMarkup() {
@@ -43,6 +44,8 @@ function setGeneratedPassword(value) {
   }
 }
 
+
+
 function resetGeneratedPassword() {
   const input = document.querySelector(SELECTORS.generatedPassword);
   const toggle = document.querySelector(SELECTORS.toggleGeneratedPassword);
@@ -65,6 +68,14 @@ function generatePassword(length = 12) {
     }
   }
   return Array.from(values, (value) => charset[value % charset.length]).join("");
+}
+
+function handleCopyPassword(){
+  const input = document.querySelector(SELECTORS.generatedPassword);
+  if (!input) return;
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value);
 }
 
 function handleGeneratePassword() {
@@ -246,6 +257,10 @@ export async function setupCreateUserModal({
     generatePasswordButton.addEventListener("click", handleGeneratePassword);
   }
 
+  const copyPasswordButton = document.querySelector(SELECTORS.toggleCopyPassword);
+  if (copyPasswordButton) {
+    copyPasswordButton.addEventListener("click",handleCopyPassword);
+  }
   const createUserButton = document.querySelector(SELECTORS.submitButton);
   if (createUserButton) {
     createUserButton.addEventListener("click", () =>
