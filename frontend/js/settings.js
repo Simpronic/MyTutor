@@ -202,6 +202,73 @@ function getValue(selector) {
   if (!element) return "";
   return String(element.value || "").trim();
 }
+function getStoredUser() {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) return null;
+  try {
+    return JSON.parse(storedUser);
+  } catch (error) {
+    console.warn("Utente in localStorage non valido:", error);
+    return null;
+  }
+}
+
+async function fetchUserProfile() {
+  try {
+    const response = await authFetch(`${API_USER_MANAGEMENT_URL_BASE}/me`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const profile = await response.json();
+    if (profile) {
+      localStorage.setItem("user", JSON.stringify(profile));
+    }
+    return profile;
+  } catch (error) {
+    console.warn("Errore nel caricamento profilo:", error);
+    return null;
+  }
+}
+
+function formatDateForInput(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toISOString().split("T")[0];
+}
+
+function setInputValue(selector, value) {
+  const element = document.querySelector(selector);
+  if (!element || value === undefined || value === null || value === "") return;
+  element.value = value;
+}
+
+function ensureSelectValue(selectElement, value) {
+  if (!selectElement || !value) return;
+  const existing = Array.from(selectElement.options).find((option) => option.value === value);
+  if (!existing) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    selectElement.appendChild(option);
+  }
+  selectElement.value = value;
+}
+
+function prefillProfileFields(user, { countrySelect, citySelect }) {
+  if (!user) return;
+  setInputValue(selectors.firstName, user.nome);
+  setInputValue(selectors.lastName, user.cognome);
+  setInputValue(selectors.email, user.email);
+  setInputValue(selectors.phone, user.telefono);
+  setInputValue(selectors.cf, user.cf);
+  setInputValue(selectors.birth, formatDateForInput(user.data_nascita));
+  setInputValue(selectors.iban, user.iban);
+  ensureSelectValue(countrySelect, user.paese);
+  ensureSelectValue(citySelect, user.citta);
+}
 
 function toggleDisabled(selector, shouldDisable) {
   const element = document.querySelector(selector);
@@ -271,6 +338,7 @@ async function handleSaveInfo() {
   const data_nascita = getValue(selectors.birth);
   const paese = getValue(selectors.country);
   const citta = getValue(selectors.city);
+  const iban = getValue(selectors.iban);
 
   if (nome) payload.nome = nome;
   if (cognome) payload.cognome = cognome;
@@ -278,6 +346,7 @@ async function handleSaveInfo() {
   if (telefono) payload.telefono = telefono;
   if (cf) payload.cf = cf;
   if (data_nascita) payload.data_nascita = data_nascita;
+  if (iban) payload.iban = iban;
   if (paese) payload.paese = paese;
   if (citta) payload.citta = citta;
 
@@ -353,14 +422,24 @@ async function handlePasswordChange() {
 function disableUnsupportedFields() {
   const ibanInput = document.querySelector(selectors.iban);
   if (ibanInput) {
-    ibanInput.setAttribute("disabled", "disabled");
-    ibanInput.setAttribute("placeholder", "Non disponibile");
+    ibanInput.removeAttribute("disabled");
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const countrySelect = document.querySelector(selectors.country);
-  loadCountries(countrySelect);
+    const citySelect = document.querySelector(selectors.city);
+  const storedUser = getStoredUser();
+  const profile = (await fetchUserProfile()) || storedUser;
+
+  const loadCountriesPromise = loadCountries(countrySelect);
+  if (loadCountriesPromise?.then) {
+    loadCountriesPromise
+      .then(() => prefillProfileFields(profile, { countrySelect, citySelect }))
+      .catch(() => prefillProfileFields(profile, { countrySelect, citySelect }));
+  } else {
+    prefillProfileFields(profile, { countrySelect, citySelect });
+  }
   disableUnsupportedFields();
   toggleDisabled(selectors.city, true);
 

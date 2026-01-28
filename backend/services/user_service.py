@@ -55,6 +55,7 @@ def create_user(db: Session, payload: UserCreate) -> CreatedUserResponse:
         cf=payload.cf,
         telefono=payload.telefono,
         data_nascita=payload.data_nascita.date() if payload.data_nascita else None,
+        iban=payload.iban,
         citta=payload.citta,
         indirizzo=payload.indirizzo,
         cap=payload.cap,

@@ -36,7 +36,7 @@ CREATE TABLE utente (
   cf CHAR(16) NULL,
   telefono VARCHAR(30) NULL,
   data_nascita DATE NULL,
-
+  iban VARCHAR(50) NULL,
   citta VARCHAR(120) NULL,
   indirizzo VARCHAR(255) NULL,
   cap VARCHAR(10) NULL,

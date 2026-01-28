@@ -18,6 +18,7 @@ class UserCreate(BaseModel):
     cf: Optional[str] = Field(None, max_length=16)
     telefono: Optional[str] = Field(None, max_length=30)
     data_nascita: Optional[datetime] = None
+    iban: Optional[str] = Field(None, max_length=34)
     citta: Optional[str] = Field(None, max_length=120)
     indirizzo: Optional[str] = Field(None, max_length=255)
     cap: Optional[str] = Field(None, max_length=10)
@@ -48,6 +49,7 @@ class TutorSettingsUpdateRequest(BaseModel):
     cf: str | None = Field(None, min_length=16, max_length=16)
     telefono: str | None = Field(None, max_length=30)
     data_nascita: date | None = None
+    iban: str | None = Field(None, max_length=34)
     citta: str | None = Field(None, max_length=120)
     indirizzo: str | None = Field(None, max_length=255)
     cap: str | None = Field(None, max_length=10)
@@ -73,6 +75,7 @@ class UserFullResponse(BaseModel):
     cf: Optional[str] = None
     telefono: Optional[str] = None
     data_nascita: Optional[date] = None
+    iban: Optional[str] = None
     citta: Optional[str] = None
     indirizzo: Optional[str] = None
     cap: Optional[str] = None

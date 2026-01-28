@@ -25,7 +25,8 @@ class Utente(Base):
     cf: Mapped[Optional[str]] = mapped_column(VARCHAR(16), nullable=True)
     telefono: Mapped[Optional[str]] = mapped_column(VARCHAR(30), nullable=True)
     data_nascita: Mapped[Optional[date]] = mapped_column(DATE, nullable=True)
-
+    iban: Mapped[Optional[str]] = mapped_column(VARCHAR(34), nullable=True)
+    
     citta: Mapped[Optional[str]] = mapped_column(VARCHAR(120), nullable=True)
     indirizzo: Mapped[Optional[str]] = mapped_column(VARCHAR(255), nullable=True)
     cap: Mapped[Optional[str]] = mapped_column(VARCHAR(10), nullable=True)

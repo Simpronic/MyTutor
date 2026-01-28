@@ -59,6 +59,11 @@ def modifyUser(
         new_password=payload.new_password,
         )
 
+@router.get("/me", response_model=UserFullResponse)
+def get_me(
+    user: Utente = Depends(get_current_user),
+) -> UserFullResponse:
+    return user
 
 @router.patch("/user/modify",response_model=UpdateResponse)
 def modifyUser(
