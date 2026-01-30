@@ -65,7 +65,29 @@
           aria-labelledby="profile-tab"
           tabindex="0"
         >
-          <h4 class="text-primary">Informazioni personali</h4>
+                    <div class="d-flex align-items-center justify-content-between">
+            <h4 class="text-primary mb-0">Informazioni personali</h4>
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2"
+              id="edit-profile"
+              aria-label="Abilita modifica informazioni personali"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <path
+                  d="M15.502 1.94a.5.5 0 0 1 0 .706l-1.043 1.043-2.147-2.147 1.043-1.043a.5.5 0 0 1 .707 0l1.44 1.44zm-2.19 2.897L5.56 12.59a.5.5 0 0 1-.168.11l-4 1.5a.5.5 0 0 1-.65-.65l1.5-4a.5.5 0 0 1 .11-.168l7.752-7.752 2.147 2.147z"
+                />
+              </svg>
+              Modifica
+            </button>
+          </div>
           <p class="text-muted">
             Qui puoi aggiornare le tue informazioni di base e, se necessario, cambiare la password.
           </p>
@@ -74,56 +96,56 @@
             <div class="col-12">
               <div class="settings-field">
                 <label for="firstName" class="form-label settings-label">Nome</label>
-                <input type="text" class="form-control-settings" id="firstName" placeholder="Mario" />
+                <input type="text" class="form-control-settings" id="firstName" placeholder="Mario" disabled />
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="lastName" class="form-label settings-label">Cognome</label>
-                <input type="text" class="form-control-settings" id="lastName" placeholder="Rossi" />
+                <input type="text" class="form-control-settings" id="lastName" placeholder="Rossi" disabled />
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="email" class="form-label settings-label">Email</label>
-                <input type="email" class="form-control-settings" id="email" placeholder="mario.rossi@email.it" />
+                <input type="email" class="form-control-settings" id="email" placeholder="mario.rossi@email.it" disabled />
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="phone" class="form-label settings-label">Telefono</label>
-                <input type="tel" class="form-control-settings" id="phone" placeholder="+39 333 123 4567" />
+                <input type="tel" class="form-control-settings" id="phone" placeholder="+39 333 123 4567" disabled />
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="iban" class="form-label settings-label">IBAN</label>
-                <input type="text" class="form-control-settings" id="iban" placeholder="es IT60X0542811101000000123456" />
+                <input type="text" class="form-control-settings" id="iban" placeholder="es IT60X0542811101000000123456" disabled/>
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="cf" class="form-label settings-label">CF</label>
-                <input type="text" class="form-control-settings" id="cf" placeholder="RSSMRA80A01H501Z" />
+                <input type="text" class="form-control-settings" id="cf" placeholder="RSSMRA80A01H501Z" disabled />
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="birth" class="form-label settings-label">Data nascita</label>
-                <input type="date" class="form-control-settings" id="birth" />
+                <input type="date" class="form-control-settings" id="birth" disabled />
               </div>
             </div>
 
             <div class="col-12">
               <div class="settings-field">
                 <label for="country" class="form-label settings-label">Paese</label>
-                <select id="country" class="form-control-settings">
+                <select id="country" class="form-control-settings" disabled>
                   <option value="" selected disabled>Seleziona un paese</option>
                 </select>
               </div>
@@ -136,9 +158,9 @@
                   <option value="" selected disabled>Seleziona prima un paese</option>
                 </select>
               </div>
-              <div class="col-12 d-flex gap-2 mt-3">
+              <div class="col-12 d-flex gap-2 mt-3 d-none" id="profile-actions">
                 <button type="button" class="btn btn-primary" id="info_change">Salva Modifiche</button>
-                <button type="reset" class="btn btn-outline-secondary">Annulla</button>
+                <button type="button" class="btn btn-outline-secondary" id="info_cancel">Annulla</button>
               </div>
             </div>
             <div class="col-12">

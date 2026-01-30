@@ -138,3 +138,28 @@ Use it at your own risk.
 }
 
 running it from the backend folder
+
+## Frontend debugging (VSCode)
+
+Per il frontend puoi usare il debugger JavaScript integrato in VSCode con il browser:
+
+1. Avvia un server statico dalla cartella `frontend`, per esempio:
+
+   ```bash
+   cd frontend
+   python -m http.server 8000
+   ```
+
+2. Aggiungi una voce `launch.json` come questa:
+
+   ```json
+   {
+     "name": "Debug Frontend (Chrome)",
+     "type": "pwa-chrome",
+     "request": "launch",
+     "url": "http://localhost:8000/html/settings.html",
+     "webRoot": "${workspaceFolder}/frontend"
+   }
+   ```
+
+3. Imposta i breakpoint nei file `frontend/js` e avvia il debugger.
