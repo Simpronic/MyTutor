@@ -146,6 +146,7 @@ const selectors = {
   detailCap: "#detail-cap",
   detailRoles: "#detail-roles",
   detailId: "#detail-id",
+  deleteUser: "#delete-user",
   activateDeactivate:"#activate-deactivate-user"
 };
 
@@ -351,10 +352,37 @@ async function toggleUser(){
     const timestamp = data?.update_timestamp
       ? ` (aggiornato: ${data.update_timestamp})`
       : "";
-    showAlert(`Utente aggiornato con successo${timestamp}.`, "success");
+    showAlert(`Utente aggiornato con successo ${timestamp}.`, "success");
     loadUser()
   }catch(error){
     showAlert(error.message || "Errore durante la disativazione/attivazione utente", "error");
+  }
+}
+
+async function deleteUser(){
+  if(!selectedUser){
+    alert("Nessun utente selezionato");
+    return;
+  } 
+  if(!confirm(`Sicuro di voler eliminare l'utente ${selectedUser.username} ?`)) return;
+  const id = selectedUser.id
+  try{
+    const response = await authFetch(`${API_USER_MANAGEMENT_URL_BASE}/user/deleteUser?id=${encodeURIComponent(id)}`,{
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const detail = errorBody?.detail ? `: ${errorBody.detail}` : "";
+      throw new Error(`Errore aggiornamento${detail}`);
+    }
+    const data = await response.json().catch(() => ({}));
+    const timestamp = data?.update_timestamp
+      ? ` (aggiornato: ${data.update_timestamp})`
+      : "";
+    showAlert(`Utente eliminato con successo ${timestamp}.`, "success");
+    loadUser()
+  }catch(error){
+    showAlert(error.message || "Errore durante l'eliminazione dell' utente", "error");
   }
 }
 
@@ -461,6 +489,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     activateDeactivateButton.addEventListener('click',toggleUser)
   }
   
+  const deleteButton = document.querySelector(selectors.deleteUser);
+  if(deleteButton){
+    deleteButton.addEventListener('click',deleteUser)
+  }
+
   setupCreateUserModal({
     authFetch,
     userManagementBaseUrl: API_USER_MANAGEMENT_URL_BASE,

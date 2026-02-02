@@ -207,7 +207,7 @@ async function handleCreateUser({
       setGeneratedPassword(data.psw);
     }
     showAlert(`Utente creato con successo${data?.user ? `: ${data.user}` : ""}.`, "success");
-    await loadUsers();
+    await loadUser();
     const modalElement = document.querySelector(SELECTORS.modal);
     if (modalElement && window.bootstrap?.Modal) {
       const modalInstance =

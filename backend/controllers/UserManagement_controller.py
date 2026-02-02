@@ -39,6 +39,14 @@ def toggleUser(
 ) -> UpdateResponse:
     return user_service.toggleUser(db,id)
 
+@router.delete("/user/deleteUser",response_model=UpdateResponse)
+def deleteUser(
+    id: int,
+    db: Session = Depends(get_db),
+    _:Utente = Depends(require_permission("USER_CREATE"))
+) -> UpdateResponse:
+    return user_service.deleteUser(db,id)
+
 @router.get("/user/userInfos", response_model=UserFullResponse)
 def getUserInfos(
     user_id: int,
@@ -68,7 +76,7 @@ def modifyUser(
     db: Session = Depends(get_db),
     user: Utente = Depends(get_current_user)
 )-> UpdateResponse:
-    return user_service.update_password(
+    return user_service.updatePassword(
         db,
         user,
         old_password=payload.old_password,
@@ -95,7 +103,7 @@ def modifyMe(
     db: Session = Depends(get_db),
     user: Utente = Depends(get_current_user)
 )-> UpdateResponse:
-    return user_service.update_profile(
+    return user_service.updateProfile(
         db,
         user,
         payload

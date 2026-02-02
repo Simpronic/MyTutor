@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import secrets
+import datetime
 from typing import List
 
 from fastapi import HTTPException, status
@@ -74,7 +74,7 @@ def create_user(db: Session, payload: UserCreate) -> CreatedUserResponse:
     return CreatedUserResponse(user=user.username)
 
 
-def update_password(
+def updatePassword(
     db: Session,
     user: Utente,
     *,
@@ -101,6 +101,7 @@ def toggleUser(
         user_id: int
 ) -> UpdateResponse:
     user = db.query(Utente).filter(Utente.id == user_id).first()
+    if(user == None): return UpdateResponse(Result=-1,update_timestamp=datetime.datetime.now())
     user.attivo = 1 if user.attivo == 0 else 0
     db.commit()
     db.refresh(user)
@@ -112,7 +113,16 @@ def getUserInfos(
 ) -> UserFullResponse:
     return db.query(Utente).filter(Utente.id == user_id).first()
     
-def update_profile(
+
+def deleteUser(
+        db: Session,
+        user_id:int
+) -> UpdateResponse:
+    db.query(Utente).filter(Utente.id == user_id).delete()
+    db.commit()
+    return UpdateResponse(Result=1,update_timestamp=datetime.datetime.now())
+    
+def updateProfile(
     db: Session,
     user: Utente,
     payload: TutorSettingsUpdateRequest,
