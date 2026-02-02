@@ -6,7 +6,8 @@ START TRANSACTION;
 INSERT INTO ruolo (nome, descrizione) VALUES
   ('SYSTEM_ADMIN', 'Amministratore globale del sistema'),
   ('STAFF',        'Staff operativo'),
-  ('TUTOR',        'Tutor/Insegnante')
+  ('TUTOR',        'Tutor/Insegnante'),
+  ('READER',       'Utente che puo solo visualizzare')
 ON DUPLICATE KEY UPDATE
   descrizione = VALUES(descrizione);
 
@@ -31,10 +32,6 @@ INSERT INTO permesso (codice, descrizione) VALUES
   ('TOPIC_UPDATE',   'Gestire argomenti'),
   ('TUTOR_SUBJECT_SET', 'Impostare materie e tariffe tutor'),
 
-  -- disponibilità
-  ('AVAIL_READ',   'Leggere disponibilità tutor'),
-  ('AVAIL_WRITE',  'Creare/modificare disponibilità tutor'),
-
   -- lezioni
   ('LESSON_READ',     'Leggere lezioni'),
   ('LESSON_CREATE',   'Creare lezioni'),
@@ -54,6 +51,18 @@ INSERT INTO permesso (codice, descrizione) VALUES
   ('NOTE_UPDATE',  'Modificare note')
 ON DUPLICATE KEY UPDATE
   descrizione = VALUES(descrizione);
+
+INSERT IGNORE INTO ruolo_permesso(ruolo_id,permesso_id)
+SELECT r.id, p.id
+FROM ruolo r
+JOIN permesso p
+WHERE r.nome = 'READER'
+  AND p.codice IN (
+    'USER_READ',
+    'SUBJECT_READ','TOPIC_READ',
+    'LESSON_READ',
+    'PAYMENT_READ','NOTE_READ'
+  );
 
 INSERT IGNORE INTO ruolo_permesso (ruolo_id, permesso_id)
 SELECT r.id, p.id

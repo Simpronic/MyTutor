@@ -96,7 +96,22 @@ def update_password(
     db.refresh(user)
     return UpdateResponse(Result=1, update_timestamp=user.updated_at)
 
+def toggleUser(
+        db: Session,
+        user_id: int
+) -> UpdateResponse:
+    user = db.query(Utente).filter(Utente.id == user_id).first()
+    user.attivo = 1 if user.attivo == 0 else 0
+    db.commit()
+    db.refresh(user)
+    return UpdateResponse(Result=1,update_timestamp=user.updated_at)
 
+def getUserInfos(
+        db: Session,
+        user_id:int 
+) -> UserFullResponse:
+    return db.query(Utente).filter(Utente.id == user_id).first()
+    
 def update_profile(
     db: Session,
     user: Utente,

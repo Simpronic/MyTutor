@@ -8,7 +8,6 @@ const userIdInput = document.getElementById("userId");
 const passwordInput = document.getElementById("password");
 
 async function login(identifier, password) {
-    console.log(JSON.stringify({ identifier, password }))
   const response = await fetch(`${API_AUTH_URL_BASE}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -31,6 +31,22 @@ def add_user(
 ) -> CreatedUserResponse:
     return user_service.create_user(db,payload)
 
+@router.patch("/user/toggleUser",response_model=UpdateResponse)
+def toggleUser(
+    id: int,
+    db: Session = Depends(get_db),
+    _: Utente = Depends(require_permission("USER_UPDATE"))
+) -> UpdateResponse:
+    return user_service.toggleUser(db,id)
+
+@router.get("/user/userInfos", response_model=UserFullResponse)
+def getUserInfos(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _:Utente = Depends(require_permission("USER_READ"))
+):
+    return user_service.getUserInfos(db,user_id)
+
 @router.get("/allUsers",response_model=List[UserFullResponse])
 def getAllUsers(
     db: Session = Depends(get_db),

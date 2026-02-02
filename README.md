@@ -123,7 +123,15 @@ The **only requirement** is that proper **attribution to the original author** i
 This software is provided "as is", without warranty of any kind.  
 Use it at your own risk.
 
-@@ -114,26 +144,26 @@ For the backend part you can use the VSCode debugger using this configuration:
+## Debugging (VSCode)
+
+Per permettere il debug dell'applicativo bisogna configurare in VsCode una lounch configuration.
+Quella utilizzata nel progetto è la seguente: 
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
             "name": "Python Debugger: FastAPI",
             "type": "debugpy",
             "request": "launch",
@@ -132,34 +140,38 @@ Use it at your own risk.
                 "backend.main:app",
                 "--reload"
             ],
-            "jinja": true
+            "jinja": true,
+            "serverReadyAction": {
+                "pattern": "Uvicorn running on (http://127\\.0\\.0\\.1:\\d+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            }
+        },
+        {
+            "name": "Debug Frontend (Chrome)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "about:blank",
+            "webRoot": "${workspaceFolder}",
+            "trace": true
+        }
+    ],
+
+    "compounds": [
+        {
+            "name": "Debug Backend + Frontend",
+            "configurations": [
+                "Python Debugger: FastAPI",
+                "Debug Frontend (Chrome)"
+            ],
+            "stopAll": true
         }
     ]
 }
 
-running it from the backend folder
+Tramite questa è possibile avviare il debug sia del backend che del frontend.
+Per avviare quella del frontend in particolare c'è bisogno di: 
+1. avviare un terminare e far partire il webserver python tramite: 
 
-## Frontend debugging (VSCode)
-
-Per il frontend puoi usare il debugger JavaScript integrato in VSCode con il browser:
-
-1. Avvia un server statico dalla cartella `frontend`, per esempio:
-
-   ```bash
-   cd frontend
-   python -m http.server 8000
-   ```
-
-2. Aggiungi una voce `launch.json` come questa:
-
-   ```json
-   {
-     "name": "Debug Frontend (Chrome)",
-     "type": "pwa-chrome",
-     "request": "launch",
-     "url": "http://localhost:8000/html/settings.html",
-     "webRoot": "${workspaceFolder}/frontend"
-   }
-   ```
-
-3. Imposta i breakpoint nei file `frontend/js` e avvia il debugger.
+```python -m http.server 8000```
+2. Impostare i breakpoint nei file `frontend/js` e avvia il debugger.

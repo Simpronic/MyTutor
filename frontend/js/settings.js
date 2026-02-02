@@ -107,7 +107,8 @@ const selectors = {
   oldPassword: "#currentPassword",
   savePassword: "#psw_change",
   iban: "#iban",
-  loadUsers: "#load-users",
+  loadUser: "#load-user",
+  refreshUsers: "#refresh-users",
   usersList: "#users-list",
   selectedUser: "#selected-user",
   createUserModal: "#createUserModal",
@@ -131,7 +132,26 @@ const selectors = {
   cancelInfo: "#info_cancel",
   editProfile: "#edit-profile",
   profileActions: "#profile-actions",
+  userDetailsModal: "#userDetailsModal",
+  detailFirstName: "#detail-first-name",
+  detailLastName: "#detail-last-name",
+  detailUsername: "#detail-username",
+  detailEmail: "#detail-email",
+  detailPhone: "#detail-phone",
+  detailCf: "#detail-cf",
+  detailBirth: "#detail-birth",
+  detailCountry: "#detail-country",
+  detailCity: "#detail-city",
+  detailAddress: "#detail-address",
+  detailCap: "#detail-cap",
+  detailRoles: "#detail-roles",
+  detailId: "#detail-id",
+  activateDeactivate:"#activate-deactivate-user"
 };
+
+let cachedUsers = [];
+let selectedUser = null;
+let lastFocusedElement = null;
 
 function formatUserLabel(user) {
   const nome = user?.nome || "";
@@ -140,6 +160,88 @@ function formatUserLabel(user) {
   const email = user?.email ? `• ${user.email}` : "";
   return `${cognome} ${nome}`.trim() || user?.email || user?.username || "Utente";
 }
+function formatUserValue(value) {
+  if (value === null || value === undefined || value === "") {
+    return "-";
+  }
+  return String(value);
+}
+
+function formatUserRoles(user) {
+  const roles = user?.ruoli;
+  if (!Array.isArray(roles) || roles.length === 0) {
+    return "-";
+  }
+  return roles
+    .map((role) => role?.nome || role?.descrizione || role)
+    .filter(Boolean)
+    .join(", ") || "-";
+}
+
+function updateUserDetailsModal(user) {
+  const mapping = [
+    [selectors.detailFirstName, user?.nome],
+    [selectors.detailLastName, user?.cognome],
+    [selectors.detailUsername, user?.username],
+    [selectors.detailEmail, user?.email],
+    [selectors.detailPhone, user?.telefono],
+    [selectors.detailCf, user?.cf],
+    [selectors.detailBirth, user?.data_nascita],
+    [selectors.detailCountry, user?.paese],
+    [selectors.detailCity, user?.citta],
+    [selectors.detailAddress, user?.indirizzo],
+    [selectors.detailCap, user?.cap],
+    [selectors.detailRoles, formatUserRoles(user)],
+    [selectors.detailId, user?.id],
+  ];
+
+  mapping.forEach(([selector, value]) => {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.textContent = formatUserValue(value);
+    }
+  });
+}
+
+async function fetchUserDetails(userId) {
+  const response = await authFetch(`${API_USER_MANAGEMENT_URL_BASE}/user/userInfos?user_id=${encodeURIComponent(userId)}`, {
+    method: "GET",
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+function openUserDetailsModal(user) {
+  const modalElement = document.querySelector(selectors.userDetailsModal);
+  if (!modalElement) {
+    showAlert("Modale dettagli utente non disponibile.");
+    return;
+  }
+  updateUserDetailsModal(user);
+  lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+  if (window.bootstrap?.Modal) {
+    if (!modalElement.dataset.focusHandlerAttached) {
+      modalElement.addEventListener("hide.bs.modal", () => {
+        if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+          lastFocusedElement.focus();
+        }
+      });
+      modalElement.dataset.focusHandlerAttached = "true";
+    }
+    const modalInstance =
+      window.bootstrap.Modal.getInstance(modalElement) ||
+      new window.bootstrap.Modal(modalElement);
+    modalInstance.show();
+  } else {
+    modalElement.classList.add("show");
+    modalElement.style.display = "block";
+    modalElement.removeAttribute("aria-hidden");
+  }
+}
+
 
 function renderUsersList(users) {
   const list = document.querySelector(selectors.usersList);
@@ -165,22 +267,26 @@ function renderUsersList(users) {
     button.type = "button";
     button.className = "list-group-item list-group-item-action";
     button.dataset.userId = user.id;
-    button.textContent = `${formatUserLabel(user)} ${user?.email ? `• ${user.email}` : ""}`.trim();
+    button.innerHTML  = `${formatUserLabel(user)} ${user?.email ? `• ${user.email}` : ""} • <b>${(user.attivo == 1) ? 'attivo' : 'inattivo'}</b>`.trim();
     button.addEventListener("click", () => {
       const active = list.querySelector(".active");
       if (active) active.classList.remove("active");
       button.classList.add("active");
-      const selectedUser = document.querySelector(selectors.selectedUser);
-      if (selectedUser) {
-        selectedUser.textContent = `Selezionato: ${formatUserLabel(user)} ${user?.email ? `(${user.email})` : ""}`.trim();
+      const selectedUserLabel = document.querySelector(selectors.selectedUser);
+      if (selectedUserLabel) {
+        selectedUserLabel.textContent = `Selezionato: ${formatUserLabel(user)} ${user?.email ? `(${user.email})` : ""}`.trim();
       }
       list.dataset.selectedUserId = String(user.id);
+      selectedUser = user;
     });
+    if (list.dataset.selectedUserId === String(user.id)) {
+      button.classList.add("active");
+    }
     list.appendChild(button);
   });
 }
 
-async function loadUsers() {
+async function loadUser() {
   const list = document.querySelector(selectors.usersList);
   if (!list) return;
   list.innerHTML = `<div class="list-group-item text-muted">Caricamento utenti...</div>`;
@@ -193,7 +299,11 @@ async function loadUsers() {
       throw new Error(`HTTP ${response.status}`);
     }
     const users = await response.json();
+    cachedUsers = Array.isArray(users) ? users : [];
     renderUsersList(users);
+    if (list?.dataset.selectedUserId) {
+      selectedUser = cachedUsers.find((user) => String(user.id) === list.dataset.selectedUserId) || null;
+    }
   } catch (error) {
     console.warn("Errore nel caricamento utenti:", error);
     list.innerHTML = `<div class="list-group-item text-danger">Errore nel caricamento utenti.</div>`;
@@ -219,6 +329,33 @@ function showAlert(message, type = "info") {
     console.error(message);
   }
   window.alert(message);
+}
+
+async function toggleUser(){
+  if(!selectedUser){
+    alert("Nessun utente selezionato");
+    return;
+  } 
+  if(!confirm(`Sicuro di voler disattivare l'utente ${selectedUser.username} ?`)) return;
+  const id = selectedUser.id
+  try{
+    const response = await authFetch(`${API_USER_MANAGEMENT_URL_BASE}/user/toggleUser?id=${encodeURIComponent(id)}`,{
+      method: "PATCH",
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const detail = errorBody?.detail ? `: ${errorBody.detail}` : "";
+      throw new Error(`Errore aggiornamento${detail}`);
+    }
+    const data = await response.json().catch(() => ({}));
+    const timestamp = data?.update_timestamp
+      ? ` (aggiornato: ${data.update_timestamp})`
+      : "";
+    showAlert(`Utente aggiornato con successo${timestamp}.`, "success");
+    loadUser()
+  }catch(error){
+    showAlert(error.message || "Errore durante la disativazione/attivazione utente", "error");
+  }
 }
 
 async function handlePasswordChange() {
@@ -286,9 +423,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     passwordButton.addEventListener("click", handlePasswordChange);
   }
 
-  const loadUsersButton = document.querySelector(selectors.loadUsers);
-  if (loadUsersButton) {
-    loadUsersButton.addEventListener("click", loadUsers);
+  const loadUserButton = document.querySelector(selectors.loadUser);
+  if (loadUserButton) {
+      loadUserButton.addEventListener("click", async () => {
+      if (!selectedUser) {
+        showAlert("Seleziona un utente dall'elenco per visualizzarne i dettagli.");
+        return;
+      }
+      try {
+        const userDetails = await fetchUserDetails(selectedUser.id);
+        openUserDetailsModal(userDetails);
+      } catch (error) {
+        console.warn("Errore nel caricamento dettagli utente:", error);
+        showAlert("Errore nel caricamento dei dettagli utente.");
+      }
+    });
+  }
+
+  const refreshUsersButton = document.querySelector(selectors.refreshUsers);
+  if (refreshUsersButton) {
+    refreshUsersButton.addEventListener("click", loadUser);
   }
 
   const usersTab = document.getElementById("users-tab");
@@ -297,16 +451,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     usersTab.addEventListener("shown.bs.tab", () => {
       if (!usersLoaded) {
         usersLoaded = true;
-        loadUsers();
+        loadUser();
       }
     });
+  }
+
+  const activateDeactivateButton = document.querySelector(selectors.activateDeactivate);
+  if(activateDeactivateButton){
+    activateDeactivateButton.addEventListener('click',toggleUser)
   }
   
   setupCreateUserModal({
     authFetch,
     userManagementBaseUrl: API_USER_MANAGEMENT_URL_BASE,
     loadCountries: (selectElement) => loadCountries(selectElement, authFetch, API_AUTH_URL_BASE),
-    loadUsers,
+    loadUser,
     getValue,
     showAlert,
   });

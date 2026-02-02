@@ -199,7 +199,7 @@
           <h4 class="text-primary">Gestione utenti</h4>
 
           <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-outline-primary" id="load-users">Visualizza utenti</button>
+            <button type="button" class="btn btn-outline-primary" id="load-user">Visualizza utente</button>
             <button
               type="button"
               class="btn btn-outline-success"
@@ -209,16 +209,21 @@
             >
               Crea utente
             </button>
-            <button type="button" class="btn btn-outline-warning">Aggiorna utente</button>
-            <button type="button" class="btn btn-secondary">Disattiva utente</button>
+            <button type="button" class="btn btn-secondary" id="activate-deactivate-user">Attiva/Disattiva utente</button>
             <button type="button" class="btn btn-outline-danger">Elimina utente</button>
           </div>
           
           <div class="mt-4">
             <div class="d-flex flex-column gap-1">
-              <h6 class="text-muted">Utenti registrati</h6>
-              <small class="text-muted" id="selected-user">Nessun utente selezionato.</small>
-            </div>
+              <div class="d-flex align-items-center gap-2">
+                <h6 class="text-muted m-0">Utenti registrati</h6>
+                <button id="refresh-users"
+                        type="button"
+                        class="btn btn-link p-0 text-muted"
+                        aria-label="Ricarica utenti">
+                  <span aria-hidden="true">↻</span>
+                </button>
+              </div>
             <div class="list-group mt-2" id="users-list" style="max-height: 280px; overflow-y: auto;">
               <div class="list-group-item text-muted">Carica gli utenti per visualizzare l'elenco.</div>
             </div>
@@ -236,5 +241,73 @@
     </div>
   </main>
   <div id="create-user-modal-root"></div>
+
+  <div
+    class="modal fade"
+    id="userDetailsModal"
+    tabindex="-1"
+    aria-labelledby="userDetailsModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userDetailsModalLabel">Dettagli utente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <tbody>
+                <tr>
+                  <th class="text-muted small w-25">Nome</th>
+                  <td id="detail-first-name" class="fw-semibold">-</td>
+                  <th class="text-muted small w-25">Cognome</th>
+                  <td id="detail-last-name" class="fw-semibold">-</td>
+                </tr>
+                <tr>
+                  <th class="text-muted small">Username</th>
+                  <td id="detail-username" class="fw-semibold">-</td>
+                  <th class="text-muted small">Email</th>
+                  <td id="detail-email" class="fw-semibold">-</td>
+                </tr>
+                <tr>
+                  <th class="text-muted small">Telefono</th>
+                  <td id="detail-phone" class="fw-semibold">-</td>
+                  <th class="text-muted small">Codice fiscale</th>
+                  <td id="detail-cf" class="fw-semibold">-</td>
+                </tr>
+                <tr>
+                  <th class="text-muted small">Data di nascita</th>
+                  <td id="detail-birth" class="fw-semibold">-</td>
+                  <th class="text-muted small">Paese</th>
+                  <td id="detail-country" class="fw-semibold">-</td>
+                </tr>
+                <tr>
+                  <th class="text-muted small">Città</th>
+                  <td id="detail-city" class="fw-semibold">-</td>
+                  <th class="text-muted small">Indirizzo</th>
+                  <td id="detail-address" class="fw-semibold">-</td>
+                </tr>
+                <tr>
+                  <th class="text-muted small">CAP</th>
+                  <td id="detail-cap" class="fw-semibold">-</td>
+                  <th class="text-muted small">Ruoli</th>
+                  <td id="detail-roles" class="fw-semibold">-</td>
+                </tr>
+                <tr>
+                  <th class="text-muted small">ID</th>
+                  <td id="detail-id" class="fw-semibold" colspan="3">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

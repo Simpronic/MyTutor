@@ -54,7 +54,7 @@ def get_current_user(
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-    user = db.query(Utente).filter(Utente.id == int(user_id)).first()
+    user = db.query(Utente).filter(Utente.id == int(user_id), Utente.attivo == 1).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
