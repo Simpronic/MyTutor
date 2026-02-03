@@ -1,7 +1,7 @@
 # backend/security/auth.py
 
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+import secrets
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -10,51 +10,69 @@ from sqlalchemy.orm import Session
 
 from backend.core.config import get_settings
 from backend.db.base import get_db
-from backend.model import Utente
+from backend.model import Utente, Sessione
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 settings = get_settings()
-JWT_SECRET = settings.jwt_secret
-JWT_ALGORITHM = settings.jwt_algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
-REFRESH_TOKEN_EXPIRE_DAYS = settings.refresh_token_expire_days
 
-def create_access_token(subject: str) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {"sub": subject, "exp": expire, "type": "access"}
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+SESSION_DURATION_MINUTES = settings.session_duration_minutes
 
-def create_refresh_token(subject: str) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    payload = {"sub": subject, "exp": expire, "type": "refresh"}
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-def decode_refresh_token(token: str) -> str:
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        token_type: Optional[str] = payload.get("type")
-        user_id: Optional[str] = payload.get("sub")
-        if token_type != "refresh" or not user_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    return user_id
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def create_session(db: Session, user: Utente) -> Sessione:
+    existing = db.query(Sessione).filter(Sessione.utente_id == user.id).first()
+    if existing:
+        if existing.expires_at > _utc_now():
+            refresh_session(db, existing)
+            db.refresh(existing)
+            return existing
+        existing.token = secrets.token_urlsafe(32)
+        existing.created_at = _utc_now()
+        existing.last_seen_at = existing.created_at
+        existing.expires_at = existing.created_at + timedelta(minutes=SESSION_DURATION_MINUTES)
+        db.commit()
+        db.refresh(existing)
+        return existing
+
+    token = secrets.token_urlsafe(32)
+    expires_at = _utc_now() + timedelta(minutes=SESSION_DURATION_MINUTES)
+    session = Sessione(token=token, utente_id=user.id,created_at=_utc_now(),expires_at=expires_at)
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return session
+
+
+def refresh_session(db: Session, session: Sessione) -> None:
+    session.last_seen_at = _utc_now()
+    session.expires_at = session.last_seen_at + timedelta(minutes=SESSION_DURATION_MINUTES)
+    db.commit()
+
+def revoke_session(db: Session, token: str) -> bool:
+    session = db.query(Sessione).filter(Sessione.token == token).first()
+    if not session:
+        return False
+    db.delete(session)
+    db.commit()
+    return True
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> Utente:
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id: Optional[str] = payload.get("sub")
-        token_type: Optional[str] = payload.get("type")
-        if not user_id or token_type != "access":
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    except JWTError:
+    session = db.query(Sessione).filter(Sessione.token == token).first()
+    if not session:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-
-    user = db.query(Utente).filter(Utente.id == int(user_id), Utente.attivo == 1).first()
+    if session.expires_at <= _utc_now():
+        db.delete(session)
+        db.commit()
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
+    user = db.query(Utente).filter(Utente.id == session.utente_id, Utente.attivo == 1).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    refresh_session(db, session)
     return user

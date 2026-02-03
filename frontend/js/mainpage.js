@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
       toolbarMenu.style.display = 'none';
     }
   });
-  logoutBtn.addEventListener("click",(e) => {
-    if(confirm("Sei sicuro di voler uscire ? ")){
-      logout()
+  logoutBtn.addEventListener("click", async () => {
+    if (confirm("Sei sicuro di voler uscire ? ")) {
+      await logout();
     }
   });
 });

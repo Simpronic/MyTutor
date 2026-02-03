@@ -20,6 +20,7 @@ from backend.model.pagamento import Pagamento
 from backend.model.studente import Studente
 from backend.model.utente_note import UtenteNote
 from backend.model.paese import Paese
+from backend.model.sessione import Sessione
 
 __all__ = [
     # pure links (Table)
@@ -31,6 +32,7 @@ __all__ = [
     "Ruolo",
     "Utente",
     "UtenteRuolo",
+    "Sessione",
     "Paese",
 
     # didattica

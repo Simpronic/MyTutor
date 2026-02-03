@@ -4,81 +4,45 @@ export const API_BASE_URL =
 export const API_AUTH_URL_BASE = API_BASE_URL + "/auth";
 export const API_USER_MANAGEMENT_URL_BASE = API_BASE_URL + "/userManagement";
 
-const ACCESS_TOKEN_KEY = "access_token";
-const REFRESH_TOKEN_KEY = "refresh_token";
+const SESSION_TOKEN_KEY = "session_token";
 
-export function getAccessToken() {
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+export function getSessionToken() {
+  return localStorage.getItem(SESSION_TOKEN_KEY);
 }
 
-export function getRefreshToken() {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-export function setAuthTokens({ accessToken, refreshToken }) {
-  if (accessToken) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-  }
-  if (refreshToken) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+export function setAuthTokens({ sessionToken }) {
+  if (sessionToken) {
+    localStorage.setItem(SESSION_TOKEN_KEY, sessionToken);
   }
 }
 
 export function clearAuthTokens() {
-  localStorage.removeItem(ACCESS_TOKEN_KEY);
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(SESSION_TOKEN_KEY);
 }
-
-async function refreshAccessToken() {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) {
-    return false;
-  }
-
-  const response = await fetch(`${API_AUTH_URL_BASE}/refresh`, {
+export async function logoutSession() {
+  const sessionToken = getSessionToken();
+    if (!sessionToken) {
+      return;
+    }
+    await fetch(`${API_AUTH_URL_BASE}/logout`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
-
-  if (!response.ok) {
-    clearAuthTokens();
-    return false;
-  }
-
-  const data = await response.json();
-  setAuthTokens({
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-  });
-  return true;
+    headers: { Authorization: `Bearer ${sessionToken}` },
+    });
 }
 
 export async function authFetch(url, options = {}) {
   const headers = new Headers(options.headers || {});
-  const accessToken = getAccessToken();
-  if (accessToken) {
-    headers.set("Authorization", `Bearer ${accessToken}`);
+  const sessionToken = getSessionToken();
+  if (sessionToken) {
+    headers.set("Authorization", `Bearer ${sessionToken}`);
   }
   const activeRoleId = localStorage.getItem("active_role_id");
   if (activeRoleId) {
     headers.set("X-Active-Role-Id", activeRoleId);
   }
   const response = await fetch(url, { ...options, headers });
-  if (response.status !== 401) {
-    return response;
+  if (response.status === 401) {
+    clearAuthTokens();
   }
-
-  const refreshed = await refreshAccessToken();
-  if (!refreshed) {
-    return response;
-  }
-
-  const retryHeaders = new Headers(options.headers || {});
-  const newAccessToken = getAccessToken();
-  if (newAccessToken) {
-    retryHeaders.set("Authorization", `Bearer ${newAccessToken}`);
-  }
-
-  return fetch(url, { ...options, headers: retryHeaders });
+  return response;
 }
