@@ -241,7 +241,7 @@
     </div>
   </main>
   <div id="create-user-modal-root"></div>
-
+  <div id="edit-user-modal-root"></div>
   <div
     class="modal fade"
     id="userDetailsModal"
@@ -249,13 +249,9 @@
     aria-labelledby="userDetailsModalLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="userDetailsModalLabel">Dettagli utente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
-        </div>
-        <div class="modal-body">
           <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
               <tbody>
@@ -278,7 +274,6 @@
                   <td id="detail-cf" class="fw-semibold">-</td>
                 </tr>
                 <tr>
-                  <th class="text-muted small">Data di nascita</th>
                   <td id="detail-birth" class="fw-semibold">-</td>
                   <th class="text-muted small">Paese</th>
                   <td id="detail-country" class="fw-semibold">-</td>
@@ -303,8 +298,14 @@
             </table>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        <div class="modal-footer justify-content-start">
+          <button type="button" class="btn btn-outline-primary" id="edit-user-footer">
+            Modifica
+          </button>
+
+          <button type="button" class="btn btn-secondary ms-3" data-bs-dismiss="modal">
+            Chiudi
+          </button>
         </div>
       </div>
     </div>

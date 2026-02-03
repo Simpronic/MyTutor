@@ -13,7 +13,8 @@ from backend.schemas.UserManagement_controller_schemas import (
     TutorSettingsUpdateRequest,
     UpdateResponse,
     UserCreate,
-    UserFullResponse
+    UserFullResponse,
+    UserUpdateRequest,
 )
 from backend.security.password import hash_password, pwd_hasher, verify_password
 from backend.services.user_helpers import ensure_unique_user_fields
@@ -137,6 +138,50 @@ def updateProfile(
     updates = payload.dict(exclude_unset=True)
     for key, value in updates.items():
         setattr(user, key, value)
+
+    db.commit()
+    db.refresh(user)
+    return UpdateResponse(Result=1, update_timestamp=user.updated_at)
+
+def updateUser(
+    db: Session,
+    user_id: int,
+    payload: UserUpdateRequest,
+) -> UpdateResponse:
+    user = db.query(Utente).filter(Utente.id == user_id).first()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Utente non trovato",
+        )
+
+    ensure_unique_user_fields(
+        db,
+        username=payload.username,
+        email=payload.email,
+        cf=payload.cf,
+        user_id=user.id,
+    )
+
+    updates = payload.dict(exclude_unset=True, exclude={"ruoli"})
+    for key, value in updates.items():
+        setattr(user, key, value)
+
+    if payload.ruoli is not None:
+        role_names = [role.nome for role in payload.ruoli]
+        roles = []
+        if role_names:
+            roles = db.query(Ruolo).filter(Ruolo.nome.in_(role_names)).all()
+            if len(roles) != len(set(role_names)):
+                missing = sorted(set(role_names) - {role.nome for role in roles})
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Ruoli non trovati: {', '.join(missing)}",
+                )
+
+        db.query(UtenteRuolo).filter(UtenteRuolo.utente_id == user.id).delete()
+        for role in roles:
+            db.add(UtenteRuolo(utente_id=user.id, ruolo_id=role.id))
 
     db.commit()
     db.refresh(user)

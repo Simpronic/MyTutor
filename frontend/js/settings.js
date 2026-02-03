@@ -2,6 +2,7 @@ import { API_AUTH_URL_BASE,API_USER_MANAGEMENT_URL_BASE, authFetch } from "./api
 import { enforceGuards } from "./router.js";
 import { setupCreateUserModal } from "./createUserModal.js";
 import { initProfileSettings, loadCountries } from "./profileSettings.js";
+import { setupEditUserModal } from "./editUserModal.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
 
@@ -146,13 +147,17 @@ const selectors = {
   detailCap: "#detail-cap",
   detailRoles: "#detail-roles",
   detailId: "#detail-id",
+  editUser: "#edit-user",
+  editUserFooter: "#edit-user-footer",
   deleteUser: "#delete-user",
   activateDeactivate:"#activate-deactivate-user"
 };
 
 let cachedUsers = [];
 let selectedUser = null;
+let selectedUserDetails = null;
 let lastFocusedElement = null;
+let openEditUserModal = null;
 
 function formatUserLabel(user) {
   const nome = user?.nome || "";
@@ -279,6 +284,7 @@ function renderUsersList(users) {
       }
       list.dataset.selectedUserId = String(user.id);
       selectedUser = user;
+      selectedUserDetails = null;
     });
     if (list.dataset.selectedUserId === String(user.id)) {
       button.classList.add("active");
@@ -460,6 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       try {
         const userDetails = await fetchUserDetails(selectedUser.id);
+        selectedUserDetails = userDetails;
         openUserDetailsModal(userDetails);
       } catch (error) {
         console.warn("Errore nel caricamento dettagli utente:", error);
@@ -503,6 +510,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     showAlert,
   });
   
+   openEditUserModal = await setupEditUserModal({
+    authFetch,
+    userManagementBaseUrl: API_USER_MANAGEMENT_URL_BASE,
+    loadCountries: (selectElement) => loadCountries(selectElement, authFetch, API_AUTH_URL_BASE),
+    showAlert,
+    loadUser,
+  });
+
+  const editUserButtons = [
+    document.querySelector(selectors.editUser),
+    document.querySelector(selectors.editUserFooter),
+  ].filter(Boolean);
+
+  const handleEditUserClick = () => {
+      if (!selectedUserDetails) {
+        showAlert("Nessun utente caricato per la modifica.");
+        return;
+      }
+      if (!openEditUserModal) {
+        showAlert("Modale di modifica non disponibile.");
+        return;
+      }
+
+      const detailsModal = document.querySelector(selectors.userDetailsModal);
+      if (detailsModal && window.bootstrap?.Modal) {
+        const detailsInstance =
+          window.bootstrap.Modal.getInstance(detailsModal) ||
+          new window.bootstrap.Modal(detailsModal);
+        detailsInstance.hide();
+      }
+
+      openEditUserModal(selectedUserDetails);
+  };
+
+  editUserButtons.forEach((button) => {
+    button.addEventListener("click", handleEditUserClick);
+  });
+
   await initProfileSettings({
     authFetch,
     apiAuthBaseUrl: API_AUTH_URL_BASE,

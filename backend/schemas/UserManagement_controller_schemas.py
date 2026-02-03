@@ -55,6 +55,21 @@ class TutorSettingsUpdateRequest(BaseModel):
     cap: str | None = Field(None, max_length=10)
     paese: str | None = Field(None, min_length=2, max_length=2)
 
+class UserUpdateRequest(BaseModel):
+    username: str | None = Field(None, min_length=1, max_length=64)
+    email: str | None = Field(None, min_length=1, max_length=254)
+    nome: str | None = Field(None, min_length=1, max_length=100)
+    cognome: str | None = Field(None, min_length=1, max_length=100)
+    cf: str | None = Field(None, min_length=16, max_length=16)
+    telefono: str | None = Field(None, max_length=30)
+    data_nascita: date | None = None
+    iban: str | None = Field(None, max_length=34)
+    citta: str | None = Field(None, max_length=120)
+    indirizzo: str | None = Field(None, max_length=255)
+    cap: str | None = Field(None, max_length=10)
+    paese: str | None = Field(None, min_length=2, max_length=2)
+    ruoli: List[RuoloCreate] | None = None
+
 
 class UpdateResponse(BaseModel):
     Result: int

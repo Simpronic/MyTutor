@@ -1,0 +1,107 @@
+<div
+  class="modal fade"
+  id="editUserModal"
+  tabindex="-1"
+  aria-labelledby="editUserModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserModalLabel">Modifica utente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-user-form" class="row g-3">
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-username">Username *</label>
+              <input class="form-control-settings" id="edit-username" type="text" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-email">Email *</label>
+              <input class="form-control-settings" id="edit-email" type="email" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-first-name">Nome *</label>
+              <input class="form-control-settings" id="edit-first-name" type="text" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-last-name">Cognome *</label>
+              <input class="form-control-settings" id="edit-last-name" type="text" required />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-cf">Codice fiscale</label>
+              <input class="form-control-settings" id="edit-cf" type="text" maxlength="16" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-phone">Telefono</label>
+              <input class="form-control-settings" id="edit-phone" type="tel" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-birth">Data di nascita</label>
+              <input class="form-control-settings" id="edit-birth" type="date" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-iban">IBAN</label>
+              <input class="form-control-settings" id="edit-iban" type="text" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-country">Paese</label>
+              <select class="form-control-settings" id="edit-country">
+                <option value="">Seleziona un paese</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-city">Città</label>
+              <input class="form-control-settings" id="edit-city" type="text" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-address">Indirizzo</label>
+              <input class="form-control-settings" id="edit-address" type="text" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="settings-field">
+              <label class="form-label settings-label" for="edit-cap">CAP</label>
+              <input class="form-control-settings" id="edit-cap" type="text" />
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="settings-field">
+              <label class="form-label settings-label">Ruoli</label>
+              <div class="border rounded p-2" id="edit-roles">
+                <div class="text-muted">Caricamento ruoli...</div>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="edit-user-id" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="button" class="btn btn-primary" id="submit-edit-user">Salva modifiche</button>
+      </div>
+    </div>
+  </div>
+</div>

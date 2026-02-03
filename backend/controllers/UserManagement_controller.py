@@ -91,11 +91,16 @@ def get_me(
 
 @router.patch("/user/modify",response_model=UpdateResponse)
 def modifyUser(
-    payload: TutorSettingsUpdateRequest,
+    user_id: int,
+    payload: UserUpdateRequest,
     db: Session = Depends(get_db),
     _: Utente = Depends(require_permission("USER_UPDATE"))
 )-> UpdateResponse:
-    pass
+    return user_service.updateUser(
+        db,
+        user_id,
+        payload
+    )
 
 @router.patch("/me/modify",response_model=UpdateResponse)
 def modifyMe(
