@@ -131,7 +131,7 @@ async function handleCreateUser({
   userManagementBaseUrl,
   getValue,
   showAlert,
-  loadUsers,
+  loadUser,
 }) {
   const submitButton = document.querySelector(SELECTORS.submitButton);
   if (submitButton) submitButton.disabled = true;
@@ -226,7 +226,7 @@ export async function setupCreateUserModal({
   authFetch,
   userManagementBaseUrl,
   loadCountries,
-  loadUsers,
+  loadUser,
   getValue,
   showAlert,
 }) {
@@ -277,7 +277,7 @@ export async function setupCreateUserModal({
         userManagementBaseUrl,
         getValue,
         showAlert,
-        loadUsers,
+        loadUser,
       })
     );
   }
@@ -290,7 +290,7 @@ export async function setupCreateUserModal({
           userManagementBaseUrl,
           getValue,
           showAlert,
-          loadUsers,
+          loadUser,
         });
       });
     }
