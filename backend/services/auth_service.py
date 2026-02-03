@@ -6,27 +6,21 @@ from typing import Dict
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.model import Permesso, Utente
+from backend.model import Permesso, Utente,Sessione
 from backend.schemas.auth_controller_schemas import (
     LoginRequest,
     LoginResponse,
-    RefreshTokenRequest,
-    RefreshTokenResponse,
     UserPermissionResponse,
     UserRolesResponse,
 )
-from backend.security.auth import (
-    create_access_token,
-    create_refresh_token,
-    decode_refresh_token,
-)
+
+from backend.security.auth import create_session
 from backend.security.password import verify_password
 from backend.security.permissions import user_permissions
 
 
 def is_email(value: str) -> bool:
     return "@" in value and "." in value
-
 
 def login(db: Session, payload: LoginRequest) -> LoginResponse:
     identifier = payload.identifier.strip()
@@ -58,21 +52,8 @@ def login(db: Session, payload: LoginRequest) -> LoginResponse:
     user.last_login_at = datetime.now(timezone.utc).replace(tzinfo=None)
     db.commit()
     db.refresh(user)
-    access_token = create_access_token(subject=str(user.id))
-    refresh_token = create_refresh_token(subject=str(user.id))
-    return LoginResponse(user=user, access_token=access_token, refresh_token=refresh_token)
-
-
-def refresh_token(db: Session, payload: RefreshTokenRequest) -> RefreshTokenResponse:
-    user_id = decode_refresh_token(payload.refresh_token)
-    user = db.query(Utente).filter(Utente.id == int(user_id)).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    if not user.attivo:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Utente disattivato")
-    access_token = create_access_token(subject=str(user.id))
-    refresh_token = create_refresh_token(subject=str(user.id))
-    return RefreshTokenResponse(access_token=access_token, refresh_token=refresh_token)
+    session = create_session(db, user)
+    return LoginResponse(user=user, session_token=session.token, expires_at=session.expires_at)
 
 
 def get_roles(user: Utente) -> UserRolesResponse:

@@ -146,6 +146,19 @@ CREATE TABLE tutor_materia (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+create table sessione(
+	token varchar(128),
+    utente_id bigint UNSIGNED,
+    created_at datetime,
+    last_seen_at datetime,
+    expires_at datetime,
+    
+    PRIMARY KEY(token),
+    CONSTRAINT uq_sessione_utente_id UNIQUE (utente_id),
+    CONSTRAINT fk_sessione_utente FOREIGN KEY(utente_id) REFERENCES utente(id) 
+	  ON DELETE CASCADE
+    ON UPDATE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================
 -- DISPONIBILITÀ

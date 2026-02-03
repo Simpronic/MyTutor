@@ -18,8 +18,7 @@ async function login(identifier, password) {
 
   const data = await response.json();
   setAuthTokens({
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
+    sessionToken: data.session_token,
   });
   localStorage.setItem("user", JSON.stringify(data.user));
   return data.user;

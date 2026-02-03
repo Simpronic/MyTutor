@@ -24,6 +24,7 @@ class Settings:
     jwt_algorithm: str
     access_token_expire_minutes: int
     refresh_token_expire_days: int
+    session_duration_minutes: int
     cors_allow_origins: list[str]
 
 
@@ -43,6 +44,9 @@ def get_settings() -> Settings:
         ),
         refresh_token_expire_days=int(
             cfg.get("SECURITY", "REFRESH_TOKEN_EXPIRE_DAYS", fallback="14")
+        ),
+        session_duration_minutes=int(
+            cfg.get("SECURITY", "SESSION_DURATION_MINUTES", fallback="120")
         ),
         cors_allow_origins=[
             item.strip()
