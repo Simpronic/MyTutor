@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import get_settings
 from backend.controllers.auth_controller import router as auth_router
@@ -24,3 +25,10 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(user_management_router)
 app.include_router(registration_router)
+
+@app.get("/swagger", include_in_schema=False)
+def swagger_ui() -> object:
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} - Swagger UI",
+    )
