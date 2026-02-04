@@ -5,6 +5,7 @@ export const API_AUTH_URL_BASE = API_BASE_URL + "/auth";
 export const API_USER_MANAGEMENT_URL_BASE = API_BASE_URL + "/userManagement";
 
 const SESSION_TOKEN_KEY = "session_token";
+const LOGIN_PAGE = "./index.html";
 
 export function getSessionToken() {
   return localStorage.getItem(SESSION_TOKEN_KEY);
@@ -43,6 +44,12 @@ export async function authFetch(url, options = {}) {
   const response = await fetch(url, { ...options, headers });
   if (response.status === 401) {
     clearAuthTokens();
+    localStorage.removeItem("active_role_id");
+    localStorage.removeItem("active_role_name");
+    localStorage.removeItem("user");
+    if (!window.location.pathname.endsWith("index.html")) {
+      window.location.replace(LOGIN_PAGE);
+    }
   }
   return response;
 }
