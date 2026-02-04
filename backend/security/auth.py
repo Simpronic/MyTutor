@@ -64,7 +64,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> Utente:
-    session = db.query(Sessione).filter(Sessione.token == token).first()
+    session = db.query(Sessione).filter(Sessione.token == token,Sessione.expires_at >= datetime.now()).first()
     if not session:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     if session.expires_at <= _utc_now():

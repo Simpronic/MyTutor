@@ -384,3 +384,42 @@ CREATE TABLE utente_note (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
+
+--==================
+--Utility Tables
+--==================
+
+CREATE TABLE IF NOT EXISTS event_log (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  event_name VARCHAR(128) NOT NULL,
+  ran_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  note VARCHAR(255) NULL
+);
+
+--==================
+--Stored Procedures AND events
+--==================
+
+DELIMITER //
+
+CREATE EVENT IF NOT EXISTS ev_test_every_second
+ON SCHEDULE EVERY 1 SECOND
+DO
+BEGIN
+DELETE from sessione WHERE expires_at < NOW();
+  INSERT INTO event_log(event_name, note)
+  VALUES ('ev_test_every_second', 'tick');
+END//
+
+DELIMITER ;
+
+--======================
+--Comandi utili------
+--======================
+
+-- SHOW VARIABLES LIKE 'event_scheduler';
+
+-- Se non è su ON 
+-- SET GLOBAL event_scheduler = ON;
+
+-- Per rendere persistente questa cosa (Set global) dovremmo cambiare la configurazione MySql
