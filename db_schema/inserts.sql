@@ -36,9 +36,7 @@ INSERT INTO permesso (codice, descrizione) VALUES
   ('LESSON_READ',     'Leggere lezioni'),
   ('LESSON_CREATE',   'Creare lezioni'),
   ('LESSON_UPDATE',   'Modificare lezioni'),
-  ('LESSON_CANCEL',   'Annullare lezioni'),
-  ('LESSON_CONFIRM',  'Confermare lezioni'),
-  ('LESSON_MARK_DONE','Segnare lezione svolta/no_show'),
+  ('LESSON_CANCEL',   'Annullare lezioni')
 
   -- pagamenti
   ('PAYMENT_READ',    'Leggere pagamenti'),
