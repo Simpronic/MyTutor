@@ -77,8 +77,10 @@ class UpdateResponse(BaseModel):
 
 
 class PasswordChange(BaseModel):
-    new_password: str
+    username: str
     old_password: str
+    new_password: str
+    
 
 
 class UserFullResponse(BaseModel):

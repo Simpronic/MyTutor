@@ -150,7 +150,8 @@ const selectors = {
   editUser: "#edit-user",
   editUserFooter: "#edit-user-footer",
   deleteUser: "#delete-user",
-  activateDeactivate:"#activate-deactivate-user"
+  activateDeactivate:"#activate-deactivate-user",
+  pswResetBtn: '#user-psw-reset'
 };
 
 let cachedUsers = [];
@@ -431,6 +432,32 @@ async function handlePasswordChange() {
   }
 }
 
+async function pswReset(){
+  if (!selectedUser) {
+        showAlert("Seleziona un utente dall'elenco");
+        return;
+      }
+      if(confirm(`Vuoi resettare la password di ${selectedUser.username}`)){
+        try{
+          const response = await authFetch(`${API_USER_MANAGEMENT_URL_BASE}/user/pswReset?user_id=${encodeURIComponent(selectedUser.id)}`, {
+          method: "PATCH"
+        });
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({}));
+            const detail = errorBody?.detail ? `: ${errorBody.detail}` : "";
+            throw new Error(`Errore aggiornamento${detail}`);
+          }
+          const data = await response.json().catch(() => ({}));
+          const timestamp = data?.update_timestamp
+            ? ` (aggiornato: ${data.update_timestamp})`
+            : "";
+          showAlert(`Password resettata con successo${timestamp}.`, "success");
+        }catch{
+          showAlert( "Errore durante il reset.", "error");
+        }
+      }
+} 
+
 document.addEventListener("DOMContentLoaded", async () => {
   
   const editProfileButton = document.querySelector(selectors.editProfile);
@@ -455,6 +482,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const passwordButton = document.querySelector(selectors.savePassword);
   if (passwordButton) {
     passwordButton.addEventListener("click", handlePasswordChange);
+  }
+
+  const resetPsw = document.querySelector(selectors.pswResetBtn);
+  if(resetPsw){
+    resetPsw.addEventListener('click',pswReset);
   }
 
   const loadUserButton = document.querySelector(selectors.loadUser);

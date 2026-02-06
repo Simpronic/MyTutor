@@ -14,7 +14,11 @@ async function login(identifier, password) {
     body: JSON.stringify({ identifier, password }),
   });
 
-  if (!response.ok) throw new Error("Login failed");
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    const detail = errorBody?.detail || "Login failed";
+    throw new Error(detail);
+  }
 
   const data = await response.json();
   setAuthTokens({
@@ -30,8 +34,8 @@ form.addEventListener("submit", async (event) => {
   const identifier = userIdInput.value.trim();
   const password = passwordInput.value;
 
-  if (!identifier || !password) {
-    alert("Inserisci ID e password");
+  if (!identifier) {
+    alert("Inserisci ID");
     return;
   }
 
@@ -41,6 +45,10 @@ form.addEventListener("submit", async (event) => {
 
     navigate("roleSelect", { requireAuth: true });
   } catch (err) {
+    if (err?.message === "PASSWORD_RESET_REQUIRED") {
+      window.location.href = `./resetPassword.html?identifier=${encodeURIComponent(identifier)}`;
+      return;
+    }
     console.error(err);
     alert("Credenziali non valide");
   }

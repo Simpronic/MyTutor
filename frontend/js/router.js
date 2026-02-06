@@ -4,6 +4,7 @@ import { clearAuthTokens, getSessionToken, logoutSession  } from "./api.js";
 
 const ROUTES = {
   login: "./index.html",
+  resetPassword: "./resetPassword.html",
   roleSelect: "./roleSelect.html",
   main: "./MainPage.html",
 };

@@ -62,14 +62,14 @@ def getAllUsers(
 ) -> List[UserFullResponse]:
     return user_service.getAllUsers(u,db)
 
-@router.patch("/user/pswChange",response_model=UpdateResponse)
-def modifyUser(
-    payload: PasswordChange,
+@router.patch("/user/pswReset",response_model=UpdateResponse)
+def pswReset(
+    user_id: int,
     db: Session = Depends(get_db),
-)-> UpdateResponse:
-    pass
-
-
+    _ : Utente = Depends(require_permission("USER_UPDATE"))
+) -> UpdateResponse:
+    return user_service.resetPsw(user_id,db)
+    
 @router.patch("/me/pswChange",response_model=UpdateResponse)
 def modifyUser(
     payload: PasswordChange,

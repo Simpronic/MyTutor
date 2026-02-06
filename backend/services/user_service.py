@@ -20,6 +20,14 @@ from backend.security.password import hash_password, pwd_hasher, verify_password
 from backend.services.user_helpers import ensure_unique_user_fields
 
 
+def resetPsw(u_id:int, db:Session) -> UpdateResponse:
+    user = db.query(Utente).filter(Utente.id == u_id).one_or_none()
+    if(user == None): return UpdateResponse(Result=-1,update_timestamp=datetime.datetime.now())
+    user.password_hash = hash_password("RESET_REQUIRED")
+    db.commit()
+    db.refresh(user)
+    return UpdateResponse(Result=1,update_timestamp=user.updated_at)
+
 def getAllUsers(u:Utente,db:Session) -> List[UserFullResponse]:
     return db.query(Utente).filter(Utente.id != u.id)
     

@@ -15,7 +15,7 @@ from fastapi.security import OAuth2PasswordBearer
 from backend.schemas.auth_controller_schemas import *
 from backend.services import auth_service
 from backend.services import user_helpers
-
+from backend.schemas.UserManagement_controller_schemas import UpdateResponse,PasswordChange
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -23,6 +23,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
     return auth_service.login(db,payload)
+
+@router.patch("/pswChange",response_model=UpdateResponse)
+def pswChange(
+    payload: PasswordChange,
+    db: Session = Depends(get_db),
+)-> UpdateResponse:
+    return auth_service.setPassword(db,payload.username,"RESET_REQUIRED",payload.new_password)
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Response:

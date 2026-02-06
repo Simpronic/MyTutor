@@ -15,7 +15,7 @@ class PaeseResponse(BaseModel):
 
 class LoginRequest(BaseModel):
     identifier: str = Field(..., min_length=1, max_length=254, description="Username oppure email")
-    password: str = Field(..., min_length=1, max_length=255)
+    password: str = Field(..., min_length=0, max_length=255)
 
 
 class UserPublic(BaseModel):
