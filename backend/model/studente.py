@@ -36,6 +36,13 @@ class Studente(Base):
     cap: Mapped[Optional[str]] = mapped_column(VARCHAR(10), nullable=True)
     paese: Mapped[Optional[str]] = mapped_column(VARCHAR(2), nullable=True)
 
+    pagante_nome: Mapped[Optional[str]] = mapped_column(VARCHAR(100), nullable=True)
+    pagante_cognome: Mapped[Optional[str]] = mapped_column(VARCHAR(100), nullable=True)
+    pagante_cf: Mapped[Optional[str]] = mapped_column(VARCHAR(16), nullable=True)
+    pagante_email: Mapped[Optional[str]] = mapped_column(VARCHAR(254), nullable=True)
+    pagante_telefono: Mapped[Optional[str]] = mapped_column(VARCHAR(30), nullable=True)
+    pagante_indirizzo: Mapped[Optional[str]] = mapped_column(VARCHAR(255), nullable=True)
+
     attivo: Mapped[bool] = mapped_column(TINYINT(1), nullable=False, server_default=text("1"))
 
     created_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))

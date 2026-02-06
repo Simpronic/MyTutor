@@ -36,7 +36,7 @@ INSERT INTO permesso (codice, descrizione) VALUES
   ('LESSON_READ',     'Leggere lezioni'),
   ('LESSON_CREATE',   'Creare lezioni'),
   ('LESSON_UPDATE',   'Modificare lezioni'),
-  ('LESSON_CANCEL',   'Annullare lezioni')
+  ('LESSON_CANCEL',   'Annullare lezioni'),
 
   -- pagamenti
   ('PAYMENT_READ',    'Leggere pagamenti'),
@@ -93,6 +93,7 @@ WHERE r.nome = 'TUTOR'
     'AVAIL_READ','AVAIL_WRITE',
     'LESSON_READ','LESSON_UPDATE',
     'LESSON_CONFIRM','LESSON_MARK_DONE',
+    'LESSON_CREATE',
     'PAYMENT_READ',
     'NOTE_READ','NOTE_CREATE'
   );
@@ -128,5 +129,19 @@ INSERT IGNORE INTO utente_ruolo (utente_id, ruolo_id, assegnato_at)
 SELECT 1, r.id, '2026-01-15 13:19:00'
 FROM ruolo r
 WHERE r.nome = 'TUTOR';
+
+INSERT INTO materia (nome, descrizione) VALUES
+('ITALIANO', 'Studio della lingua italiana, grammatica, lettura e produzione di testi.'),
+('MATEMATICA', 'Aritmetica, algebra, geometria, funzioni e logica matematica.'),
+('STORIA', 'Studio degli eventi storici dalle origini alle epoche moderne.'),
+('GEOGRAFIA', 'Studio del territorio, delle nazioni, dei climi e delle società umane.'),
+('SCIENZE', 'Biologia, chimica, fisica di base e scienze naturali.'),
+('INGLESE', 'Lingua inglese: grammatica, lessico, comprensione e produzione.'),
+('ARTE E IMMAGINE', 'Disegno, pittura, analisi delle opere d’arte e linguaggi visivi.'),
+('MUSICA', 'Teoria musicale, ascolto attivo e pratica musicale di base.'),
+('EDUCAZIONE FISICA', 'Attività motoria, sport, salute e cultura del movimento.'),
+('TECNOLOGIA', 'Sistemi tecnologici, strumenti digitali e problem-solving tecnico.'),
+('INFORMATICA', 'Basi del computer, software, internet, algoritmica introduttiva.'),
+('RELIGIONE', 'Studio delle religioni, etica, cultura religiosa.');
 
 COMMIT;

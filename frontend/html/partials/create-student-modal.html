@@ -1,0 +1,100 @@
+<div
+  class="modal fade"
+  id="createStudentModal"
+  tabindex="-1"
+  aria-labelledby="createStudentModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createStudentModalLabel">Aggiungi studente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" id="create-student-form">
+          <div class="col-md-6">
+            <label for="create-student-first-name" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="create-student-first-name" required />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-last-name" class="form-label">Cognome</label>
+            <input type="text" class="form-control" id="create-student-last-name" required />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="create-student-email" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-phone" class="form-label">Telefono</label>
+            <input type="tel" class="form-control" id="create-student-phone" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-cf" class="form-label">Codice fiscale</label>
+            <input type="text" class="form-control" id="create-student-cf" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-birth" class="form-label">Data di nascita</label>
+            <input type="date" class="form-control" id="create-student-birth" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-country" class="form-label">Paese</label>
+            <input type="text" class="form-control" id="create-student-country" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-city" class="form-label">Città</label>
+            <input type="text" class="form-control" id="create-student-city" />
+          </div>
+          <div class="col-md-8">
+            <label for="create-student-address" class="form-label">Indirizzo</label>
+            <input type="text" class="form-control" id="create-student-address" />
+          </div>
+          <div class="col-md-4">
+            <label for="create-student-cap" class="form-label">CAP</label>
+            <input type="text" class="form-control" id="create-student-cap" />
+          </div>
+          <div class="col-12">
+            <hr class="my-2" />
+            <h6 class="text-primary mb-1">Dati pagante</h6>
+            <p class="text-muted small mb-0">
+              Compila questi campi se il pagante è diverso dallo studente.
+            </p>
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-payer-first-name" class="form-label">Nome pagante</label>
+            <input type="text" class="form-control" id="create-student-payer-first-name" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-payer-last-name" class="form-label">Cognome pagante</label>
+            <input type="text" class="form-control" id="create-student-payer-last-name" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-payer-cf" class="form-label">Codice fiscale pagante</label>
+            <input type="text" class="form-control" id="create-student-payer-cf" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-payer-email" class="form-label">Email pagante</label>
+            <input type="email" class="form-control" id="create-student-payer-email" />
+          </div>
+          <div class="col-md-6">
+            <label for="create-student-payer-phone" class="form-label">Telefono pagante</label>
+            <input type="tel" class="form-control" id="create-student-payer-phone" />
+          </div>
+          <div class="col-md-8">
+            <label for="create-student-payer-address" class="form-label">Indirizzo pagante</label>
+            <input type="text" class="form-control" id="create-student-payer-address" />
+          </div>
+          <div class="col-12">
+            <div class="small text-muted" id="create-student-feedback"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="submit" class="btn btn-primary" form="create-student-form" id="submit-create-student">
+          Salva studente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -36,6 +36,7 @@ class Lezione(Base):
     valuta: Mapped[str] = mapped_column(CHAR(3), nullable=False, server_default=text("'EUR'"))
 
     note: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
+    argomento: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
     note_private: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
@@ -56,7 +57,6 @@ class Lezione(Base):
     tutor: Mapped["Utente"] = relationship("Utente", foreign_keys=[tutor_id], back_populates="lezioni_come_tutor")
 
     materia: Mapped["Materia"] = relationship("Materia", back_populates="lezioni")
-    argomento: Mapped[Optional["Argomento"]] = relationship("Argomento", back_populates="lezioni")
 
     storia_stato: Mapped[List["LezioneStatoStoria"]] = relationship(
         "LezioneStatoStoria",

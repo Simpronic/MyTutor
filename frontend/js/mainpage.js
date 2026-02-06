@@ -1,4 +1,6 @@
-import { enforceGuards,logout } from "./router.js";
+import { API_STUDENTS_URL_BASE, authFetch } from "./api.js";
+import { setupCreateStudentModal } from "./createStudentModal.js";
+import { enforceGuards, logout } from "./router.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
 
@@ -18,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const plusButton = document.getElementById('plusButton');
   const toolbarMenu = document.getElementById('toolbarMenu');
+  const openCreateStudentButton = document.getElementById("open-create-student");
   renderWelcome();
   
   const logoutBtn = document.getElementById("logout");
@@ -41,6 +44,18 @@ document.addEventListener("DOMContentLoaded", function () {
       await logout();
     }
   });
+
+  setupCreateStudentModal({ authFetch, studentsBaseUrl: API_STUDENTS_URL_BASE })
+      .then((openModal) => {
+        if (!openModal || !openCreateStudentButton) return;
+        openCreateStudentButton.addEventListener("click", () => {
+          toolbarMenu.style.display = "none";
+          openModal();
+        });
+      })
+      .catch((error) => {
+        console.warn("Errore nel caricamento modale studente:", error);
+      });
 });
 
 window.addEventListener("pageshow", renderWelcome);

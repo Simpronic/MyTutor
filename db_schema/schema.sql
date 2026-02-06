@@ -110,27 +110,6 @@ CREATE TABLE materia (
   UNIQUE KEY uq_materia_nome (nome)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE argomento (
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  nome VARCHAR(200) NOT NULL,
-  descrizione TEXT NULL,
-  PRIMARY KEY (id),
-  KEY idx_argomento_nome (nome)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE materia_argomento (
-  materia_id BIGINT UNSIGNED NOT NULL,
-  argomento_id BIGINT UNSIGNED NOT NULL,
-  PRIMARY KEY (materia_id, argomento_id),
-  KEY idx_ma_argomento (argomento_id),
-  CONSTRAINT fk_ma_materia FOREIGN KEY (materia_id)
-    REFERENCES materia(id)
-    ON DELETE CASCADE,
-  CONSTRAINT fk_ma_argomento FOREIGN KEY (argomento_id)
-    REFERENCES argomento(id)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE tutor_materia (
   tutor_id BIGINT UNSIGNED NOT NULL,
   materia_id BIGINT UNSIGNED NOT NULL,
@@ -160,26 +139,6 @@ create table sessione(
     ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =========================
--- DISPONIBILITÀ
--- =========================
-CREATE TABLE disponibilita_tutor (
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  tutor_id BIGINT UNSIGNED NOT NULL,
-  giorno_settimana TINYINT UNSIGNED NOT NULL, -- 1=Lun ... 7=Dom
-  ora_inizio TIME NOT NULL,
-  ora_fine TIME NOT NULL,
-  timezone VARCHAR(50) NOT NULL DEFAULT 'Europe/Rome',
-  attiva TINYINT(1) NOT NULL DEFAULT 1,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  KEY idx_disp_tutor (tutor_id),
-  KEY idx_disp_giorno (giorno_settimana),
-  CONSTRAINT fk_disp_tutor FOREIGN KEY (tutor_id)
-    REFERENCES utente(id)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 
 -- =========================
 -- STUDENTI (DUPLICABILI PER TUTOR)
@@ -201,6 +160,13 @@ CREATE TABLE studente (
   indirizzo VARCHAR(255) NULL,
   cap VARCHAR(10) NULL,
   paese CHAR(2) NULL,
+
+  pagante_nome VARCHAR(100) NULL,
+  pagante_cognome VARCHAR(100) NULL,
+  pagante_cf VARCHAR(16) NULL,
+  pagante_email VARCHAR(254) NULL,
+  pagante_telefono VARCHAR(30) NULL,
+  pagante_indirizzo VARCHAR(255) NULL,
 
   attivo TINYINT(1) NOT NULL DEFAULT 1,
 
@@ -243,7 +209,7 @@ CREATE TABLE lezione (
 
   prezzo DECIMAL(10,2) NULL,
   valuta CHAR(3) NOT NULL DEFAULT 'EUR',
-
+  argomento TEXT NULL,
   note TEXT NULL,
   note_private TEXT NULL,
   luogo ENUM('remoto','presenza') NOT NULL DEFAULT 'remoto',
@@ -263,11 +229,7 @@ CREATE TABLE lezione (
 
   CONSTRAINT fk_lezione_materia FOREIGN KEY (materia_id)
     REFERENCES materia(id)
-    ON DELETE RESTRICT,
-
-  CONSTRAINT fk_lezione_argomento FOREIGN KEY (argomento_id)
-    REFERENCES argomento(id)
-    ON DELETE SET NULL
+    ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Partecipanti: una lezione può avere N studenti (min 1 gestito in app o con trigger)
@@ -385,9 +347,9 @@ CREATE TABLE utente_note (
 
 COMMIT;
 
---==================
---Utility Tables
---==================
+/* ==================
+   Utility Tables
+   ================== */
 
 CREATE TABLE IF NOT EXISTS event_log (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -397,7 +359,7 @@ CREATE TABLE IF NOT EXISTS event_log (
 );
 
 --==================
---Stored Procedures AND events
+-- Stored Procedures AND events
 --==================
 
 DELIMITER //
@@ -420,15 +382,14 @@ ON SCHEDULE EVERY 2 Week
 DO
 BEGIN
 DELETE from sessione WHERE expires_at < NOW();
-  DELETE FROM event_log
-  WHERE DATEDIFF(ran_at,Now()) > 15
+  DELETE FROM event_log WHERE DATEDIFF(Now(),ran_at) > 15;
 END//
 
 DELIMITER ;
 
---======================
---Comandi utili------
---======================
+/* ======================
+-- Comandi utili ------
+ ======================*/
 
 -- SHOW VARIABLES LIKE 'event_scheduler';
 

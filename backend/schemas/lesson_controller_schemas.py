@@ -5,9 +5,8 @@ from pydantic import BaseModel, Field
 
 
 class LessonCreateRequest(BaseModel):
-    tutor_id: int
     student_id: int
-    materia_id: int
+    materia_code: str
     start_at: datetime
     end_at: datetime
     note: Optional[str] = None

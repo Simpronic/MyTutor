@@ -1,4 +1,4 @@
-import { API_AUTH_URL_BASE,API_USER_MANAGEMENT_URL_BASE, authFetch } from "./api.js";
+import { API_AUTH_URL_BASE, API_USER_MANAGEMENT_URL_BASE, authFetch } from "./api.js";
 import { enforceGuards } from "./router.js";
 import { setupCreateUserModal } from "./createUserModal.js";
 import { initProfileSettings, loadCountries } from "./profileSettings.js";
@@ -93,6 +93,20 @@ async function setupPermissions() {
 
 document.addEventListener("DOMContentLoaded", setupPermissions);
 
+function setupStudentsTab() {
+  const studentsTab = document.getElementById("students-tab");
+  const roleName = getActiveRoleName();
+  const canManageStudents = roleName === "tutor";
+
+  if (canManageStudents) {
+    studentsTab.classList.remove("d-none");
+    return;
+  }
+
+  studentsTab.classList.add("d-none");
+}
+
+document.addEventListener("DOMContentLoaded", setupStudentsTab);
 
 const selectors = {
   firstName: "#firstName",
@@ -488,7 +502,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if(resetPsw){
     resetPsw.addEventListener('click',pswReset);
   }
-
   const loadUserButton = document.querySelector(selectors.loadUser);
   if (loadUserButton) {
       loadUserButton.addEventListener("click", async () => {

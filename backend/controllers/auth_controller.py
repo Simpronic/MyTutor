@@ -15,7 +15,7 @@ from fastapi.security import OAuth2PasswordBearer
 from backend.schemas.auth_controller_schemas import *
 from backend.services import auth_service
 from backend.services import user_helpers
-from backend.schemas.UserManagement_controller_schemas import UpdateResponse,PasswordChange
+from backend.schemas.userManagement_controller_schemas import UpdateResponse,PasswordChange
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")

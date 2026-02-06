@@ -12,6 +12,9 @@ from backend.controllers.registration_controller import(
 from backend.controllers.lesson_controller import (
     router as lesson_router,
 )
+from backend.controllers.student_controller import (
+    router as student_router,
+)
 settings = get_settings()
 app = FastAPI()
 
@@ -28,6 +31,8 @@ app.include_router(auth_router)
 app.include_router(user_management_router)
 app.include_router(registration_router)
 app.include_router(lesson_router)
+app.include_router(student_router)
+
 
 @app.get("/swagger", include_in_schema=False)
 def swagger_ui() -> object:

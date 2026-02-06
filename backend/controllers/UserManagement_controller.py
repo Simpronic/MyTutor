@@ -10,7 +10,7 @@ from backend.db.base import get_db
 from backend.model import Utente
 from backend.security.dependencies import require_permission,get_current_user
 
-from backend.schemas.UserManagement_controller_schemas import *
+from backend.schemas.userManagement_controller_schemas import *
 from backend.services import user_service
 
 

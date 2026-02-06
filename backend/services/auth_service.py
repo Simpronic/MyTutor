@@ -13,7 +13,7 @@ from backend.schemas.auth_controller_schemas import (
     UserPermissionResponse,
     UserRolesResponse,
 )
-from backend.schemas.UserManagement_controller_schemas import UpdateResponse
+from backend.schemas.userManagement_controller_schemas import UpdateResponse
 
 from backend.security.auth import create_session
 from backend.security.password import verify_password

@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.mysql import BIGINT, VARCHAR, TEXT, DECIMAL, CHAR
 
 from backend.db.base import Base
-from backend.model.links import materia_argomento
 
 
 class Materia(Base):
@@ -16,12 +15,6 @@ class Materia(Base):
     nome: Mapped[str] = mapped_column(VARCHAR(200), nullable=False, unique=True)
     descrizione: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
 
-    argomenti: Mapped[List["Argomento"]] = relationship(
-        "Argomento",
-        secondary=materia_argomento,
-        back_populates="materie",
-        lazy="selectin",
-    )
 
     tutor_link: Mapped[List["TutorMateria"]] = relationship(
         "TutorMateria",

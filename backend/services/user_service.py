@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from backend.model import Ruolo, Utente, UtenteRuolo
-from backend.schemas.UserManagement_controller_schemas import (
+from backend.schemas.userManagement_controller_schemas import (
     CreatedUserResponse,
     RolesResponse,
     TutorSettingsUpdateRequest,

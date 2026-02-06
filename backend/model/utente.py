@@ -67,14 +67,6 @@ class Utente(Base):
         lazy="selectin",
     )
 
-    # disponibilita_tutor (1-N)
-    disponibilita: Mapped[List["DisponibilitaTutor"]] = relationship(
-        "DisponibilitaTutor",
-        back_populates="tutor",
-        cascade="all, delete-orphan",
-        lazy="selectin",
-    )
-
     # lezione: due FK verso utente
     lezioni_come_tutor: Mapped[List["Lezione"]] = relationship(
         "Lezione",
