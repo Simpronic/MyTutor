@@ -83,6 +83,7 @@ Table "utente" {
   "cf" CHAR(16)
   "telefono" VARCHAR(30)
   "data_nascita" DATE
+  "iban" VARCHAR(50)
   "citta" VARCHAR(120)
   "indirizzo" VARCHAR(255)
   "cap" VARCHAR(10)
@@ -151,26 +152,6 @@ Table "materia" {
   }
 }
 
-Table "argomento" {
-  "id" BIGINT [pk, not null, increment]
-  "nome" VARCHAR(200) [not null]
-  "descrizione" TEXT
-
-  Indexes {
-    nome [name: "idx_argomento_nome"]
-  }
-}
-
-Table "materia_argomento" {
-  "materia_id" BIGINT [not null]
-  "argomento_id" BIGINT [not null]
-
-  Indexes {
-    (materia_id, argomento_id) [pk]
-    argomento_id [name: "idx_ma_argomento"]
-  }
-}
-
 Table "tutor_materia" {
   "tutor_id" BIGINT [not null]
   "materia_id" BIGINT [not null]
@@ -183,19 +164,15 @@ Table "tutor_materia" {
   }
 }
 
-Table "disponibilita_tutor" {
-  "id" BIGINT [pk, not null, increment]
-  "tutor_id" BIGINT [not null]
-  "giorno_settimana" TINYINT [not null]
-  "ora_inizio" TIME [not null]
-  "ora_fine" TIME [not null]
-  "timezone" VARCHAR(50) [not null, default: 'Europe/Rome']
-  "attiva" TINYINT(1) [not null, default: 1]
-  "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+Table "sessione" {
+  "token" varchar(128) [pk]
+  "utente_id" bigint
+  "created_at" datetime
+  "last_seen_at" datetime
+  "expires_at" datetime
 
   Indexes {
-    tutor_id [name: "idx_disp_tutor"]
-    giorno_settimana [name: "idx_disp_giorno"]
+    utente_id [unique, name: "uq_sessione_utente_id"]
   }
 }
 
@@ -212,6 +189,12 @@ Table "studente" {
   "indirizzo" VARCHAR(255)
   "cap" VARCHAR(10)
   "paese" CHAR(2)
+  "pagante_nome" VARCHAR(100)
+  "pagante_cognome" VARCHAR(100)
+  "pagante_cf" VARCHAR(16)
+  "pagante_email" VARCHAR(254)
+  "pagante_telefono" VARCHAR(30)
+  "pagante_indirizzo" VARCHAR(255)
   "attivo" TINYINT(1) [not null, default: 1]
   "created_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
@@ -235,6 +218,7 @@ Table "lezione" {
   "stato" lezione_stato_enum [not null, default: 'prenotata']
   "prezzo" DECIMAL(10,2)
   "valuta" CHAR(3) [not null, default: 'EUR']
+  "argomento" TEXT
   "note" TEXT
   "note_private" TEXT
   "luogo" lezione_luogo_enum [not null, default: 'remoto']
@@ -312,6 +296,13 @@ Table "utente_note" {
   }
 }
 
+Table "event_log" {
+  "id" BIGINT [pk, increment]
+  "event_name" VARCHAR(128) [not null]
+  "ran_at" DATETIME [not null, default: `CURRENT_TIMESTAMP`]
+  "note" VARCHAR(255)
+}
+
 Ref "fk_ur_utente":"utente"."id" < "utente_ruolo"."utente_id" [delete: cascade]
 
 Ref "fk_ur_ruolo":"ruolo"."id" < "utente_ruolo"."ruolo_id" [delete: cascade]
@@ -320,23 +311,17 @@ Ref "fk_rp_ruolo":"ruolo"."id" < "ruolo_permesso"."ruolo_id" [delete: cascade]
 
 Ref "fk_rp_permesso":"permesso"."id" < "ruolo_permesso"."permesso_id" [delete: cascade]
 
-Ref "fk_ma_materia":"materia"."id" < "materia_argomento"."materia_id" [delete: cascade]
-
-Ref "fk_ma_argomento":"argomento"."id" < "materia_argomento"."argomento_id" [delete: cascade]
-
 Ref "fk_tm_tutor":"utente"."id" < "tutor_materia"."tutor_id" [delete: cascade]
 
 Ref "fk_tm_materia":"materia"."id" < "tutor_materia"."materia_id" [delete: cascade]
 
-Ref "fk_disp_tutor":"utente"."id" < "disponibilita_tutor"."tutor_id" [delete: cascade]
+Ref "fk_sessione_utente":"utente"."id" < "sessione"."utente_id" [update: cascade, delete: cascade]
 
 Ref "fk_studente_tutor":"utente"."id" < "studente"."tutor_id" [delete: cascade]
 
 Ref "fk_lezione_tutor":"utente"."id" < "lezione"."tutor_id" [delete: restrict]
 
 Ref "fk_lezione_materia":"materia"."id" < "lezione"."materia_id" [delete: restrict]
-
-Ref "fk_lezione_argomento":"argomento"."id" < "lezione"."argomento_id" [delete: set null]
 
 Ref "fk_lp_lezione":"lezione"."id" < "lezione_partecipante"."lezione_id" [delete: cascade]
 

@@ -239,7 +239,8 @@
                 </button>
               </div>
             <div class="list-group mt-2" id="users-list" style="max-height: 280px; overflow-y: auto;">
-              <div class="list-group-item text-muted">Carica gli utenti per visualizzare l'elenco.</div>
+                <div class="list-group-item text-muted">Carica gli utenti per visualizzare l'elenco.</div>
+              </div>
             </div>
           </div>
 
@@ -247,6 +248,52 @@
             <h6 class="text-muted">Azioni rapide</h6>
             <div class="list-group">
               <button type="button" id="user-psw-reset" class="list-group-item list-group-item-action">Reset password utente</button>
+            </div>
+          </div>
+        </div>
+
+         <!-- TAB: STUDENTI -->
+        <div
+          class="tab-pane fade"
+          id="students"
+          role="tabpanel"
+          aria-labelledby="students-tab"
+          tabindex="0"
+        >
+          <h4 class="text-primary">Studenti</h4>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-primary" id="view-student">
+              Visualizza studente
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="edit-student">
+              Modifica studente
+            </button>
+            <button type="button" class="btn btn-secondary" id="toggle-student">
+              Attiva/Disattiva studente
+            </button>
+            <button type="button" class="btn btn-outline-danger" id="delete-student">
+              Cancella studente
+            </button>
+          </div>
+
+          <div class="mt-4">
+            <div class="d-flex flex-column gap-1">
+              <div class="d-flex align-items-center gap-2">
+                <h6 class="text-muted m-0">Studenti registrati</h6>
+                <button
+                  id="refresh-students"
+                  type="button"
+                  class="btn btn-link p-0 text-muted"
+                  aria-label="Ricarica studenti"
+                >
+                  <span aria-hidden="true">↻</span>
+                </button>
+              </div>
+              <div class="list-group mt-2" id="students-list" style="max-height: 280px; overflow-y: auto;">
+                <div class="list-group-item text-muted">Carica gli studenti per visualizzare l'elenco.</div>
+              </div>
+              <div class="small text-muted mt-2" id="selected-student-label">Nessuno studente selezionato.</div>
             </div>
           </div>
         </div>
@@ -320,8 +367,53 @@
             Chiudi
           </button>
         </div>
-      </div>
     </div>
   </div>
+</div>
+<!-- TAB: STUDENTI -->
+      <div
+        class="tab-pane fade"
+        id="students"
+        role="tabpanel"
+        aria-labelledby="students-tab"
+        tabindex="0"
+      >
+        <h4 class="text-primary">Studenti</h4>
+
+        <div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn btn-outline-primary" id="view-student">
+            Visualizza studente
+          </button>
+          <button type="button" class="btn btn-outline-secondary" id="edit-student">
+            Modifica studente
+          </button>
+          <button type="button" class="btn btn-secondary" id="toggle-student">
+            Attiva/Disattiva studente
+          </button>
+          <button type="button" class="btn btn-outline-danger" id="delete-student">
+            Cancella studente
+          </button>
+        </div>
+
+        <div class="mt-4">
+          <div class="d-flex flex-column gap-1">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="text-muted m-0">Studenti registrati</h6>
+              <button
+                id="refresh-students"
+                type="button"
+                class="btn btn-link p-0 text-muted"
+                aria-label="Ricarica studenti"
+              >
+                <span aria-hidden="true">↻</span>
+              </button>
+            </div>
+            <div class="list-group mt-2" id="students-list" style="max-height: 280px; overflow-y: auto;">
+              <div class="list-group-item text-muted">Carica gli studenti per visualizzare l'elenco.</div>
+            </div>
+            <div class="small text-muted mt-2" id="selected-student-label">Nessuno studente selezionato.</div>
+          </div>
+        </div>
+      </div>
 </body>
 </html>

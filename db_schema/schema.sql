@@ -177,11 +177,13 @@ CREATE TABLE studente (
 
   KEY idx_studente_tutor (tutor_id),
   KEY idx_studente_cognome_nome (cognome, nome),
+  KEY idx_studente_attivo (attivo),
 
   -- Questi due UNIQUE evitano duplicati "dentro lo stesso tutor",
   -- ma permettono duplicazione tra tutor diversi.
   UNIQUE KEY uq_studente_tutor_email (tutor_id, email),
   UNIQUE KEY uq_studente_tutor_cf (tutor_id, cf),
+  
 
   CONSTRAINT fk_studente_tutor FOREIGN KEY (tutor_id)
     REFERENCES utente(id)
@@ -295,7 +297,14 @@ CREATE TABLE pagamento (
 
   riferimento_esterno VARCHAR(255) NULL,
   note TEXT NULL,
-
+  
+  pagante_nome VARCHAR(100) NULL,
+  pagante_cognome VARCHAR(100) NULL,
+  pagante_cf VARCHAR(16) NULL,
+  pagante_email VARCHAR(254) NULL,
+  pagante_telefono VARCHAR(30) NULL,
+  pagante_indirizzo VARCHAR(255) NULL,
+  
   pagato_at DATETIME NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -345,8 +354,6 @@ CREATE TABLE utente_note (
     ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-COMMIT;
-
 /* ==================
    Utility Tables
    ================== */
@@ -358,42 +365,6 @@ CREATE TABLE IF NOT EXISTS event_log (
   note VARCHAR(255) NULL
 );
 
---==================
--- Stored Procedures AND events
---==================
 
-DELIMITER //
+COMMIT;
 
-CREATE EVENT IF NOT EXISTS delete_expired_sessions
-ON SCHEDULE EVERY 10 MINUTE
-DO
-BEGIN
-DELETE from sessione WHERE expires_at < NOW();
-  INSERT INTO event_log(event_name, note)
-  VALUES ('ev_test_every_second', 'tick');
-END//
-
-DELIMITER ;
-
-DELIMITER //
-
-CREATE EVENT IF NOT EXISTS delete_old_logs
-ON SCHEDULE EVERY 2 Week
-DO
-BEGIN
-DELETE from sessione WHERE expires_at < NOW();
-  DELETE FROM event_log WHERE DATEDIFF(Now(),ran_at) > 15;
-END//
-
-DELIMITER ;
-
-/* ======================
--- Comandi utili ------
- ======================*/
-
--- SHOW VARIABLES LIKE 'event_scheduler';
-
--- Se non è su ON 
--- SET GLOBAL event_scheduler = ON;
-
--- Per rendere persistente questa cosa (Set global) dovremmo cambiare la configurazione MySql

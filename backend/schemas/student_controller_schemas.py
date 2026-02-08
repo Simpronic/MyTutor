@@ -35,6 +35,7 @@ class StudentResponse(BaseModel):
     telefono: Optional[str] = None
     cf: Optional[str] = None
     data_nascita: Optional[date] = None
+    attivo: bool
     citta: Optional[str] = None
     indirizzo: Optional[str] = None
     cap: Optional[str] = None
@@ -50,3 +51,29 @@ class StudentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+
+class StudentUpdateRequest(BaseModel):
+    nome: Optional[str] = None
+    cognome: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    cf: Optional[str] = None
+    data_nascita: Optional[date] = None
+    citta: Optional[str] = None
+    indirizzo: Optional[str] = None
+    cap: Optional[str] = None
+    paese: Optional[str] = None
+    pagante_nome: Optional[str] = None
+    pagante_cognome: Optional[str] = None
+    pagante_cf: Optional[str] = None
+    pagante_email: Optional[str] = None
+    pagante_telefono: Optional[str] = None
+    pagante_indirizzo: Optional[str] = None
+
+
+
+class StudentUpdateResponse(BaseModel):
+    Result: int
+    update_timestamp: datetime

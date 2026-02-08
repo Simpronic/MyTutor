@@ -1,4 +1,9 @@
-import { API_AUTH_URL_BASE, API_USER_MANAGEMENT_URL_BASE, authFetch } from "./api.js";
+import {
+  API_AUTH_URL_BASE,
+  API_STUDENTS_URL_BASE,
+  API_USER_MANAGEMENT_URL_BASE,
+  authFetch,
+} from "./api.js";
 import { enforceGuards } from "./router.js";
 import { setupCreateUserModal } from "./createUserModal.js";
 import { initProfileSettings, loadCountries } from "./profileSettings.js";
@@ -95,15 +100,18 @@ document.addEventListener("DOMContentLoaded", setupPermissions);
 
 function setupStudentsTab() {
   const studentsTab = document.getElementById("students-tab");
+  const studentsPane = document.getElementById("students");
   const roleName = getActiveRoleName();
   const canManageStudents = roleName === "tutor";
 
   if (canManageStudents) {
     studentsTab.classList.remove("d-none");
+    studentsPane?.classList.remove("d-none");
     return;
   }
 
   studentsTab.classList.add("d-none");
+  studentsPane?.classList.add("d-none");
 }
 
 document.addEventListener("DOMContentLoaded", setupStudentsTab);
@@ -173,6 +181,9 @@ let selectedUser = null;
 let selectedUserDetails = null;
 let lastFocusedElement = null;
 let openEditUserModal = null;
+let cachedStudents = [];
+let selectedStudent = null;
+let selectedStudentDetails = null;
 
 function formatUserLabel(user) {
   const nome = user?.nome || "";
@@ -351,6 +362,320 @@ function showAlert(message, type = "info") {
     console.error(message);
   }
   window.alert(message);
+}
+
+
+function formatStudentLabel(student) {
+  const nome = student?.nome || "";
+  const cognome = student?.cognome || "";
+  return `${cognome} ${nome}`.trim() || student?.email || "Studente";
+}
+
+function formatStudentStatus(student) {
+  return student?.attivo ? "attivo" : "inattivo";
+}
+
+function renderStudentsList(students) {
+  const list = document.querySelector("#students-list");
+  if (!list) return;
+  list.innerHTML = "";
+
+  if (!Array.isArray(students) || students.length === 0) {
+    const emptyItem = document.createElement("div");
+    emptyItem.className = "list-group-item text-muted";
+    emptyItem.textContent = "Nessuno studente trovato.";
+    list.appendChild(emptyItem);
+    return;
+  }
+
+  const sortedStudents = [...students].sort((a, b) => {
+    const aLabel = `${a?.cognome || ""} ${a?.nome || ""}`.trim().toLowerCase();
+    const bLabel = `${b?.cognome || ""} ${b?.nome || ""}`.trim().toLowerCase();
+    return aLabel.localeCompare(bLabel);
+  });
+
+  sortedStudents.forEach((student) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "list-group-item list-group-item-action";
+    button.dataset.studentId = student.id;
+    button.innerHTML = `${formatStudentLabel(student)}${
+      student?.email ? ` • ${student.email}` : ""
+    } • <b>${formatStudentStatus(student)}</b>`.trim();
+    button.addEventListener("click", () => {
+      const active = list.querySelector(".active");
+      if (active) active.classList.remove("active");
+      button.classList.add("active");
+      const selectedStudentLabel = document.querySelector("#selected-student-label");
+      if (selectedStudentLabel) {
+        selectedStudentLabel.textContent = `Selezionato: ${formatStudentLabel(student)}${
+          student?.email ? ` (${student.email})` : ""
+        }`.trim();
+      }
+      list.dataset.selectedStudentId = String(student.id);
+      selectedStudent = student;
+      selectedStudentDetails = null;
+    });
+    if (list.dataset.selectedStudentId === String(student.id)) {
+      button.classList.add("active");
+    }
+    list.appendChild(button);
+  });
+}
+
+async function loadStudents() {
+  const list = document.querySelector("#students-list");
+  if (!list) return;
+  list.innerHTML = `<div class="list-group-item text-muted">Caricamento studenti...</div>`;
+
+  try {
+    const response = await authFetch(`${API_STUDENTS_URL_BASE}/getStudents`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const students = await response.json();
+    cachedStudents = Array.isArray(students) ? students : [];
+    renderStudentsList(cachedStudents);
+    if (list?.dataset.selectedStudentId) {
+      selectedStudent =
+        cachedStudents.find((student) => String(student.id) === list.dataset.selectedStudentId) ||
+        null;
+    }
+  } catch (error) {
+    console.warn("Errore nel caricamento studenti:", error);
+    list.innerHTML = `<div class="list-group-item text-danger">Errore nel caricamento studenti.</div>`;
+  }
+}
+
+async function fetchStudentDetails(studentId) {
+  const response = await authFetch(`${API_STUDENTS_URL_BASE}/getStudent/${encodeURIComponent(studentId)}`, {
+    method: "GET",
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+function updateStudentDetailsModal(student) {
+  const mapping = [
+    ["#detail-student-first-name", student?.nome],
+    ["#detail-student-last-name", student?.cognome],
+    ["#detail-student-email", student?.email],
+    ["#detail-student-phone", student?.telefono],
+    ["#detail-student-cf", student?.cf],
+    ["#detail-student-birth", student?.data_nascita],
+    ["#detail-student-country", student?.paese],
+    ["#detail-student-city", student?.citta],
+    ["#detail-student-address", student?.indirizzo],
+    ["#detail-student-cap", student?.cap],
+    [
+      "#detail-student-payer-name",
+      [student?.pagante_nome, student?.pagante_cognome].filter(Boolean).join(" ") || "-",
+    ],
+    ["#detail-student-payer-cf", student?.pagante_cf],
+    ["#detail-student-payer-email", student?.pagante_email],
+    ["#detail-student-payer-phone", student?.pagante_telefono],
+    ["#detail-student-payer-address", student?.pagante_indirizzo],
+    ["#detail-student-status", formatStudentStatus(student)],
+    ["#detail-student-id", student?.id],
+  ];
+
+  mapping.forEach(([selector, value]) => {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.textContent = formatUserValue(value);
+    }
+  });
+}
+
+function openStudentDetailsModal(student) {
+  const modalElement = document.querySelector("#studentDetailsModal");
+  if (!modalElement) {
+    showAlert("Modale dettagli studente non disponibile.");
+    return;
+  }
+  updateStudentDetailsModal(student);
+
+  if (window.bootstrap?.Modal) {
+    const modalInstance =
+      window.bootstrap.Modal.getInstance(modalElement) ||
+      new window.bootstrap.Modal(modalElement);
+    modalInstance.show();
+  } else {
+    modalElement.classList.add("show");
+    modalElement.style.display = "block";
+    modalElement.removeAttribute("aria-hidden");
+  }
+}
+
+function fillStudentEditForm(student) {
+  const mapping = [
+    ["#edit-student-first-name", student?.nome],
+    ["#edit-student-last-name", student?.cognome],
+    ["#edit-student-email", student?.email],
+    ["#edit-student-phone", student?.telefono],
+    ["#edit-student-cf", student?.cf],
+    ["#edit-student-birth", student?.data_nascita],
+    ["#edit-student-country", student?.paese],
+    ["#edit-student-city", student?.citta],
+    ["#edit-student-address", student?.indirizzo],
+    ["#edit-student-cap", student?.cap],
+    ["#edit-student-payer-first-name", student?.pagante_nome],
+    ["#edit-student-payer-last-name", student?.pagante_cognome],
+    ["#edit-student-payer-cf", student?.pagante_cf],
+    ["#edit-student-payer-email", student?.pagante_email],
+    ["#edit-student-payer-phone", student?.pagante_telefono],
+    ["#edit-student-payer-address", student?.pagante_indirizzo],
+  ];
+
+  mapping.forEach(([selector, value]) => {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.value = value ?? "";
+    }
+  });
+}
+
+function openEditStudentModal(student) {
+  const modalElement = document.querySelector("#editStudentModal");
+  if (!modalElement) {
+    showAlert("Modale modifica studente non disponibile.");
+    return;
+  }
+  fillStudentEditForm(student);
+
+  if (window.bootstrap?.Modal) {
+    const modalInstance =
+      window.bootstrap.Modal.getInstance(modalElement) ||
+      new window.bootstrap.Modal(modalElement);
+    modalInstance.show();
+  } else {
+    modalElement.classList.add("show");
+    modalElement.style.display = "block";
+    modalElement.removeAttribute("aria-hidden");
+  }
+}
+
+function getStudentFormValue(selector) {
+  const element = document.querySelector(selector);
+  if (!element) return null;
+  return String(element.value || "").trim();
+}
+
+async function handleStudentUpdate(event) {
+  event.preventDefault();
+  if (!selectedStudent) {
+    showAlert("Nessuno studente selezionato.");
+    return;
+  }
+
+  const payload = {
+    nome: getStudentFormValue("#edit-student-first-name"),
+    cognome: getStudentFormValue("#edit-student-last-name"),
+    email: getStudentFormValue("#edit-student-email") || null,
+    telefono: getStudentFormValue("#edit-student-phone") || null,
+    cf: getStudentFormValue("#edit-student-cf") || null,
+    data_nascita: getStudentFormValue("#edit-student-birth") || null,
+    paese: getStudentFormValue("#edit-student-country") || null,
+    citta: getStudentFormValue("#edit-student-city") || null,
+    indirizzo: getStudentFormValue("#edit-student-address") || null,
+    cap: getStudentFormValue("#edit-student-cap") || null,
+    pagante_nome: getStudentFormValue("#edit-student-payer-first-name") || null,
+    pagante_cognome: getStudentFormValue("#edit-student-payer-last-name") || null,
+    pagante_cf: getStudentFormValue("#edit-student-payer-cf") || null,
+    pagante_email: getStudentFormValue("#edit-student-payer-email") || null,
+    pagante_telefono: getStudentFormValue("#edit-student-payer-phone") || null,
+    pagante_indirizzo: getStudentFormValue("#edit-student-payer-address") || null,
+  };
+
+  if (!payload.nome || !payload.cognome) {
+    showAlert("Nome e cognome sono obbligatori.", "error");
+    return;
+  }
+
+  try {
+    const response = await authFetch(`${API_STUDENTS_URL_BASE}/updateStudent/${encodeURIComponent(selectedStudent.id)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const detail = errorBody?.detail ? `: ${errorBody.detail}` : "";
+      throw new Error(`Errore aggiornamento${detail}`);
+    }
+    showAlert("Studente aggiornato con successo.", "success");
+    const modalElement = document.querySelector("#editStudentModal");
+    if (modalElement && window.bootstrap?.Modal) {
+      const modalInstance =
+        window.bootstrap.Modal.getInstance(modalElement) ||
+        new window.bootstrap.Modal(modalElement);
+      modalInstance.hide();
+    }
+    await loadStudents();
+  } catch (error) {
+    showAlert(error.message || "Errore durante l'aggiornamento dello studente.", "error");
+  }
+}
+
+async function toggleStudent() {
+  if (!selectedStudent) {
+    showAlert("Nessuno studente selezionato.");
+    return;
+  }
+  if (!confirm(`Sicuro di voler ${selectedStudent.attivo ? "disattivare" : "attivare"} lo studente?`)) {
+    return;
+  }
+  try {
+    const response = await authFetch(
+      `${API_STUDENTS_URL_BASE}/toggleStudent/${encodeURIComponent(selectedStudent.id)}`,
+      {
+        method: "PATCH",
+      },
+    );
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const detail = errorBody?.detail ? `: ${errorBody.detail}` : "";
+      throw new Error(`Errore aggiornamento${detail}`);
+    }
+    showAlert("Studente aggiornato con successo.", "success");
+    await loadStudents();
+  } catch (error) {
+    showAlert(error.message || "Errore durante l'aggiornamento dello studente.", "error");
+  }
+}
+
+async function deleteStudent() {
+  if (!selectedStudent) {
+    showAlert("Nessuno studente selezionato.");
+    return;
+  }
+  if (!confirm("Sicuro di voler cancellare lo studente selezionato?")) {
+    return;
+  }
+  try {
+    const response = await authFetch(`${API_STUDENTS_URL_BASE}/deleteStudent/${encodeURIComponent(selectedStudent.id)}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const detail = errorBody?.detail ? `: ${errorBody.detail}` : "";
+      throw new Error(`Errore aggiornamento${detail}`);
+    }
+    showAlert("Studente eliminato con successo.", "success");
+    selectedStudent = null;
+    selectedStudentDetails = null;
+    const selectedStudentLabel = document.querySelector("#selected-student-label");
+    if (selectedStudentLabel) {
+      selectedStudentLabel.textContent = "Nessuno studente selezionato.";
+    }
+    await loadStudents();
+  } catch (error) {
+    showAlert(error.message || "Errore durante l'eliminazione dello studente.", "error");
+  }
 }
 
 async function toggleUser(){
@@ -544,6 +869,74 @@ document.addEventListener("DOMContentLoaded", async () => {
   const deleteButton = document.querySelector(selectors.deleteUser);
   if(deleteButton){
     deleteButton.addEventListener('click',deleteUser)
+  }
+
+  const studentsTab = document.getElementById("students-tab");
+  if (studentsTab) {
+    let studentsLoaded = false;
+    studentsTab.addEventListener("shown.bs.tab", () => {
+      if (!studentsLoaded) {
+        studentsLoaded = true;
+        loadStudents();
+      }
+    });
+  }
+
+  const refreshStudentsButton = document.getElementById("refresh-students");
+  if (refreshStudentsButton) {
+    refreshStudentsButton.addEventListener("click", loadStudents);
+  }
+
+  const viewStudentButton = document.getElementById("view-student");
+  if (viewStudentButton) {
+    viewStudentButton.addEventListener("click", async () => {
+      if (!selectedStudent) {
+        showAlert("Seleziona uno studente dall'elenco.");
+        return;
+      }
+      try {
+        const studentDetails = await fetchStudentDetails(selectedStudent.id);
+        selectedStudentDetails = studentDetails;
+        openStudentDetailsModal(studentDetails);
+      } catch (error) {
+        console.warn("Errore nel caricamento dettagli studente:", error);
+        showAlert("Errore nel caricamento dei dettagli studente.");
+      }
+    });
+  }
+
+  const editStudentButton = document.getElementById("edit-student");
+  if (editStudentButton) {
+    editStudentButton.addEventListener("click", async () => {
+      if (!selectedStudent) {
+        showAlert("Seleziona uno studente dall'elenco.");
+        return;
+      }
+      try {
+        const studentDetails =
+          selectedStudentDetails || (await fetchStudentDetails(selectedStudent.id));
+        selectedStudentDetails = studentDetails;
+        openEditStudentModal(studentDetails);
+      } catch (error) {
+        console.warn("Errore nel caricamento studente:", error);
+        showAlert("Errore nel caricamento dei dati studente.");
+      }
+    });
+  }
+
+  const editStudentForm = document.getElementById("edit-student-form");
+  if (editStudentForm) {
+    editStudentForm.addEventListener("submit", handleStudentUpdate);
+  }
+
+  const toggleStudentButton = document.getElementById("toggle-student");
+  if (toggleStudentButton) {
+    toggleStudentButton.addEventListener("click", toggleStudent);
+  }
+
+  const deleteStudentButton = document.getElementById("delete-student");
+  if (deleteStudentButton) {
+    deleteStudentButton.addEventListener("click", deleteStudent);
   }
 
   setupCreateUserModal({

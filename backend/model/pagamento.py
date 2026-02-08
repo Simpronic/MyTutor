@@ -31,6 +31,13 @@ class Pagamento(Base):
     riferimento_esterno: Mapped[Optional[str]] = mapped_column(VARCHAR(255), nullable=True)
     note: Mapped[Optional[str]] = mapped_column(TEXT, nullable=True)
 
+    pagante_nome: Mapped[Optional[str]] = mapped_column(VARCHAR(100), nullable=True)
+    pagante_cognome: Mapped[Optional[str]] = mapped_column(VARCHAR(100), nullable=True)
+    pagante_cf: Mapped[Optional[str]] = mapped_column(VARCHAR(16), nullable=True)
+    pagante_email: Mapped[Optional[str]] = mapped_column(VARCHAR(254), nullable=True)
+    pagante_telefono: Mapped[Optional[str]] = mapped_column(VARCHAR(30), nullable=True)
+    pagante_indirizzo: Mapped[Optional[str]] = mapped_column(VARCHAR(255), nullable=True)
+    
     pagato_at: Mapped[Optional[datetime]] = mapped_column(DATETIME, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 

@@ -15,6 +15,7 @@ class Studente(Base):
     __table_args__ = (
         Index("idx_studente_tutor", "tutor_id"),
         Index("idx_studente_cognome_nome", "cognome", "nome"),
+        Index("idx_studente_attivo", "attivo"),
         UniqueConstraint("tutor_id", "email", name="uq_studente_tutor_email"),
         UniqueConstraint("tutor_id", "cf", name="uq_studente_tutor_cf"),
     )
