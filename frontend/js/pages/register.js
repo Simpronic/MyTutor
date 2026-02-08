@@ -1,5 +1,6 @@
-import { API_BASE_URL, API_AUTH_URL_BASE } from "./api.js";
-import { navigate } from "./router.js";
+import { API_BASE_URL, API_AUTH_URL_BASE } from "../core/api.js";
+import { navigate } from "../core/router.js";
+
 
 const REGISTER_URL = `${API_BASE_URL}/registration/registerUser`;
 

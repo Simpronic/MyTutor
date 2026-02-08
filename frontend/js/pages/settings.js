@@ -3,11 +3,11 @@ import {
   API_STUDENTS_URL_BASE,
   API_USER_MANAGEMENT_URL_BASE,
   authFetch,
-} from "./api.js";
-import { enforceGuards } from "./router.js";
-import { setupCreateUserModal } from "./createUserModal.js";
+} from "../core/api.js";
+import { enforceGuards } from "../core/router.js";
+import { setupCreateUserModal } from "../components/createUserModal.js";
 import { initProfileSettings, loadCountries } from "./profileSettings.js";
-import { setupEditUserModal } from "./editUserModal.js";
+import { setupEditUserModal } from "../components/editUserModal.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
 
@@ -98,7 +98,25 @@ async function setupPermissions() {
 
 document.addEventListener("DOMContentLoaded", setupPermissions);
 
-function setupStudentsTab() {
+async function insertStudentsTab() {
+  const root = document.getElementById("students-tab-root");
+  if (!root || root.dataset.tabLoaded === "true") {
+    return root;
+  }
+
+  const tabUrl = new URL("./partials/students-tab.html", window.location.href);
+  const response = await fetch(tabUrl);
+  if (!response.ok) {
+    throw new Error(`Errore caricamento tab studenti: HTTP ${response.status}`);
+  }
+
+  root.innerHTML = await response.text();
+  root.dataset.tabLoaded = "true";
+  return root;
+}
+
+async function setupStudentsTab() {
+  await insertStudentsTab();
   const studentsTab = document.getElementById("students-tab");
   const studentsPane = document.getElementById("students");
   const roleName = getActiveRoleName();
@@ -939,7 +957,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     deleteStudentButton.addEventListener("click", deleteStudent);
   }
 
-  setupCreateUserModal({
+  const createUserModal = await setupCreateUserModal({
     authFetch,
     userManagementBaseUrl: API_USER_MANAGEMENT_URL_BASE,
     loadCountries: (selectElement) => loadCountries(selectElement, authFetch, API_AUTH_URL_BASE),
@@ -947,6 +965,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     getValue,
     showAlert,
   });
+
+  const createUserButton = document.getElementById("create-user-button");
+  if (createUserButton) {
+    createUserButton.addEventListener("click", () => {
+      if (!createUserModal) {
+        showAlert("Modale di creazione utente non disponibile.");
+        return;
+      }
+      if (window.bootstrap?.Modal) {
+        const instance =
+          window.bootstrap.Modal.getInstance(createUserModal) ||
+          new window.bootstrap.Modal(createUserModal);
+        instance.show();
+      } else {
+        createUserModal.classList.add("show");
+        createUserModal.style.display = "block";
+        createUserModal.removeAttribute("aria-hidden");
+      }
+    });
+  }
   
    openEditUserModal = await setupEditUserModal({
     authFetch,

@@ -10,7 +10,7 @@
   <link href="../css/style2.css" rel="stylesheet" />
 
   <script defer src="../js/bootstrap.bundle.js"></script>
-  <script type="module" defer src="../js/settings.js"></script>
+  <script type="module" defer src="../js/pages/settings.js"></script>
 </head>
 
 <body style="background-color: #f0f2f5;">
@@ -218,8 +218,6 @@
               type="button"
               class="btn btn-outline-success"
               id="create-user-button"
-              data-bs-toggle="modal"
-              data-bs-target="#createUserModal"
             >
               Crea utente
             </button>
@@ -251,169 +249,6 @@
             </div>
           </div>
         </div>
-
-         <!-- TAB: STUDENTI -->
-        <div
-          class="tab-pane fade"
-          id="students"
-          role="tabpanel"
-          aria-labelledby="students-tab"
-          tabindex="0"
-        >
-          <h4 class="text-primary">Studenti</h4>
-
-          <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-outline-primary" id="view-student">
-              Visualizza studente
-            </button>
-            <button type="button" class="btn btn-outline-secondary" id="edit-student">
-              Modifica studente
-            </button>
-            <button type="button" class="btn btn-secondary" id="toggle-student">
-              Attiva/Disattiva studente
-            </button>
-            <button type="button" class="btn btn-outline-danger" id="delete-student">
-              Cancella studente
-            </button>
-          </div>
-
-          <div class="mt-4">
-            <div class="d-flex flex-column gap-1">
-              <div class="d-flex align-items-center gap-2">
-                <h6 class="text-muted m-0">Studenti registrati</h6>
-                <button
-                  id="refresh-students"
-                  type="button"
-                  class="btn btn-link p-0 text-muted"
-                  aria-label="Ricarica studenti"
-                >
-                  <span aria-hidden="true">↻</span>
-                </button>
-              </div>
-              <div class="list-group mt-2" id="students-list" style="max-height: 280px; overflow-y: auto;">
-                <div class="list-group-item text-muted">Carica gli studenti per visualizzare l'elenco.</div>
-              </div>
-              <div class="small text-muted mt-2" id="selected-student-label">Nessuno studente selezionato.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-  <div id="create-user-modal-root"></div>
-  <div id="edit-user-modal-root"></div>
-  <div
-    class="modal fade"
-    id="userDetailsModal"
-    tabindex="-1"
-    aria-labelledby="userDetailsModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
-              <tbody>
-                <tr>
-                  <th class="text-muted small w-25">Nome</th>
-                  <td id="detail-first-name" class="fw-semibold">-</td>
-                  <th class="text-muted small w-25">Cognome</th>
-                  <td id="detail-last-name" class="fw-semibold">-</td>
-                </tr>
-                <tr>
-                  <th class="text-muted small">Username</th>
-                  <td id="detail-username" class="fw-semibold">-</td>
-                  <th class="text-muted small">Email</th>
-                  <td id="detail-email" class="fw-semibold">-</td>
-                </tr>
-                <tr>
-                  <th class="text-muted small">Telefono</th>
-                  <td id="detail-phone" class="fw-semibold">-</td>
-                  <th class="text-muted small">Codice fiscale</th>
-                  <td id="detail-cf" class="fw-semibold">-</td>
-                </tr>
-                <tr>
-                  <td id="detail-birth" class="fw-semibold">-</td>
-                  <th class="text-muted small">Paese</th>
-                  <td id="detail-country" class="fw-semibold">-</td>
-                </tr>
-                <tr>
-                  <th class="text-muted small">Città</th>
-                  <td id="detail-city" class="fw-semibold">-</td>
-                  <th class="text-muted small">Indirizzo</th>
-                  <td id="detail-address" class="fw-semibold">-</td>
-                </tr>
-                <tr>
-                  <th class="text-muted small">CAP</th>
-                  <td id="detail-cap" class="fw-semibold">-</td>
-                  <th class="text-muted small">Ruoli</th>
-                  <td id="detail-roles" class="fw-semibold">-</td>
-                </tr>
-                <tr>
-                  <th class="text-muted small">ID</th>
-                  <td id="detail-id" class="fw-semibold" colspan="3">-</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="modal-footer justify-content-start">
-          <button type="button" class="btn btn-outline-primary" id="edit-user-footer">
-            Modifica
-          </button>
-
-          <button type="button" class="btn btn-secondary ms-3" data-bs-dismiss="modal">
-            Chiudi
-          </button>
-        </div>
-    </div>
-  </div>
-</div>
-<!-- TAB: STUDENTI -->
-      <div
-        class="tab-pane fade"
-        id="students"
-        role="tabpanel"
-        aria-labelledby="students-tab"
-        tabindex="0"
-      >
-        <h4 class="text-primary">Studenti</h4>
-
-        <div class="d-flex flex-wrap gap-2">
-          <button type="button" class="btn btn-outline-primary" id="view-student">
-            Visualizza studente
-          </button>
-          <button type="button" class="btn btn-outline-secondary" id="edit-student">
-            Modifica studente
-          </button>
-          <button type="button" class="btn btn-secondary" id="toggle-student">
-            Attiva/Disattiva studente
-          </button>
-          <button type="button" class="btn btn-outline-danger" id="delete-student">
-            Cancella studente
-          </button>
-        </div>
-
-        <div class="mt-4">
-          <div class="d-flex flex-column gap-1">
-            <div class="d-flex align-items-center gap-2">
-              <h6 class="text-muted m-0">Studenti registrati</h6>
-              <button
-                id="refresh-students"
-                type="button"
-                class="btn btn-link p-0 text-muted"
-                aria-label="Ricarica studenti"
-              >
-                <span aria-hidden="true">↻</span>
-              </button>
-            </div>
-            <div class="list-group mt-2" id="students-list" style="max-height: 280px; overflow-y: auto;">
-              <div class="list-group-item text-muted">Carica gli studenti per visualizzare l'elenco.</div>
-            </div>
-            <div class="small text-muted mt-2" id="selected-student-label">Nessuno studente selezionato.</div>
-          </div>
-        </div>
-      </div>
+        <div id="students-tab-root"></div>
 </body>
 </html>

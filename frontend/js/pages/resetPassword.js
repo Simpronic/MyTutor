@@ -1,4 +1,4 @@
-import { API_AUTH_URL_BASE } from "./api.js";
+import { API_AUTH_URL_BASE } from "../core/api.js";
 
 const form = document.getElementById("resetPasswordForm");
 const newPasswordInput = document.getElementById("newPassword");

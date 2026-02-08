@@ -1,5 +1,5 @@
-import { API_BASE_URL, authFetch } from "./api.js";
-import { navigate, enforceGuards } from "./router.js";
+import { API_BASE_URL, authFetch } from "../core/api.js";
+import { navigate, enforceGuards } from "../core/router.js";
 
 const form = document.getElementById("roleForm");
 const roleSelect = document.getElementById("roleSelect");

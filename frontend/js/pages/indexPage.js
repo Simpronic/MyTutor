@@ -1,5 +1,6 @@
-import { API_AUTH_URL_BASE, setAuthTokens} from "./api.js";
-import { navigate } from "./router.js";
+import { API_AUTH_URL_BASE, setAuthTokens } from "../core/api.js";
+import { navigate } from "../core/router.js";
+
 
 
 

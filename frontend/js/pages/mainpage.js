@@ -1,6 +1,6 @@
-import { API_STUDENTS_URL_BASE, authFetch } from "./api.js";
-import { setupCreateStudentModal } from "./createStudentModal.js";
-import { enforceGuards, logout } from "./router.js";
+import { API_STUDENTS_URL_BASE, authFetch } from "../core/api.js";
+import { setupCreateStudentModal } from "../components/createStudentModal.js";
+import { enforceGuards, logout } from "../core/router.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
 
