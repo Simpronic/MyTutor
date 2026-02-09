@@ -240,6 +240,25 @@ async function loadStudentDetailsModal() {
   }
 }
 
+async function loadEditStudentModal() {
+  const root = document.getElementById("edit-student-modal-root");
+  if (!root || root.dataset.modalLoaded === "true") {
+    return;
+  }
+
+  try {
+    const modalUrl = new URL("./partials/edit-student-modal.html", window.location.href);
+    const response = await fetch(modalUrl);
+    if (!response.ok) {
+      throw new Error(`Errore caricamento modale: HTTP ${response.status}`);
+    }
+    root.innerHTML = await response.text();
+    root.dataset.modalLoaded = "true";
+  } catch (error) {
+    console.warn("Impossibile caricare la modale modifica studente:", error);
+  }
+}
+
 function formatUserLabel(user) {
   const nome = user?.nome || "";
   const cognome = user?.cognome || "";
@@ -595,7 +614,7 @@ function fillStudentEditForm(student) {
 }
 
 function openEditStudentModal(student) {
-  const modalElement = document.querySelector("#edit-user-modal-root");
+  const modalElement = document.querySelector("#editStudentModal");
   if (!modalElement) {
     showAlert("Modale modifica studente non disponibile.");
     return;
@@ -855,6 +874,7 @@ async function pswReset(){
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUserDetailsModal();
   await loadStudentDetailsModal();
+  await loadEditStudentModal();
   const editProfileButton = document.querySelector(selectors.editProfile);
   if (editProfileButton) {
     editProfileButton.addEventListener("click", () => {
@@ -961,7 +981,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  const editStudentButton = document.getElementById("edit-student-modal-root");
+  const editStudentButton = document.getElementById("edit-student");
 
   if (editStudentButton) {
     editStudentButton.addEventListener("click", async () => {
