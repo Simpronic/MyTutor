@@ -241,7 +241,10 @@ export async function setupCreateUserModal({
   }
 
   const modal = document.querySelector(SELECTORS.modal);
-  if (!modal || modal.dataset.listenersAttached === "true") return;
+  if (!modal) return null;
+  if (modal.dataset.listenersAttached === "true") {
+    return modal;
+  }
   modal.dataset.listenersAttached = "true";
 
   modal.addEventListener("show.bs.modal", () => {
@@ -294,4 +297,5 @@ export async function setupCreateUserModal({
         });
       });
     }
+    return modal;
 }

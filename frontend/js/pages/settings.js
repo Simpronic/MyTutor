@@ -203,6 +203,25 @@ let cachedStudents = [];
 let selectedStudent = null;
 let selectedStudentDetails = null;
 
+async function loadUserDetailsModal() {
+  const root = document.getElementById("user-details-modal-root");
+  if (!root || root.dataset.modalLoaded === "true") {
+    return;
+  }
+
+  try {
+    const modalUrl = new URL("./partials/user-details-modal.html", window.location.href);
+    const response = await fetch(modalUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    root.innerHTML = await response.text();
+    root.dataset.modalLoaded = "true";
+  } catch (error) {
+    console.warn("Impossibile caricare la modale dettagli utente:", error);
+  }
+}
+
 function formatUserLabel(user) {
   const nome = user?.nome || "";
   const cognome = user?.cognome || "";
@@ -816,7 +835,7 @@ async function pswReset(){
 } 
 
 document.addEventListener("DOMContentLoaded", async () => {
-  
+  await loadUserDetailsModal();
   const editProfileButton = document.querySelector(selectors.editProfile);
   if (editProfileButton) {
     editProfileButton.addEventListener("click", () => {
