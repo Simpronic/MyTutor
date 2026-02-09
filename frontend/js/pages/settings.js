@@ -221,6 +221,24 @@ async function loadUserDetailsModal() {
     console.warn("Impossibile caricare la modale dettagli utente:", error);
   }
 }
+async function loadStudentDetailsModal() {
+  const root = document.getElementById("student-details-modal-root");
+  if (!root || root.dataset.modalLoaded === "true") {
+    return;
+  }
+
+  try {
+    const modalUrl = new URL("./partials/student-details-modal.html", window.location.href);
+    const response = await fetch(modalUrl);
+    if (!response.ok) {
+      throw new Error(`Errore caricamento modale: HTTP ${response.status}`);
+    }
+    root.innerHTML = await response.text();
+    root.dataset.modalLoaded = "true";
+  } catch (error) {
+    console.warn("Impossibile caricare la modale dettagli studente:", error);
+  }
+}
 
 function formatUserLabel(user) {
   const nome = user?.nome || "";
@@ -577,7 +595,7 @@ function fillStudentEditForm(student) {
 }
 
 function openEditStudentModal(student) {
-  const modalElement = document.querySelector("#editStudentModal");
+  const modalElement = document.querySelector("#edit-user-modal-root");
   if (!modalElement) {
     showAlert("Modale modifica studente non disponibile.");
     return;
@@ -836,6 +854,7 @@ async function pswReset(){
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadUserDetailsModal();
+  await loadStudentDetailsModal();
   const editProfileButton = document.querySelector(selectors.editProfile);
   if (editProfileButton) {
     editProfileButton.addEventListener("click", () => {
@@ -942,7 +961,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  const editStudentButton = document.getElementById("edit-student");
+  const editStudentButton = document.getElementById("edit-student-modal-root");
+
   if (editStudentButton) {
     editStudentButton.addEventListener("click", async () => {
       if (!selectedStudent) {
@@ -953,6 +973,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const studentDetails =
           selectedStudentDetails || (await fetchStudentDetails(selectedStudent.id));
         selectedStudentDetails = studentDetails;
+        const detailsModal = document.querySelector("#studentDetailsModal");
+        if (detailsModal && window.bootstrap?.Modal) {
+          const detailsInstance =
+            window.bootstrap.Modal.getInstance(detailsModal) ||
+            new window.bootstrap.Modal(detailsModal);
+          detailsInstance.hide();
+        }
         openEditStudentModal(studentDetails);
       } catch (error) {
         console.warn("Errore nel caricamento studente:", error);
@@ -1018,6 +1045,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.querySelector(selectors.editUserFooter),
   ].filter(Boolean);
 
+ 
   const handleEditUserClick = () => {
       if (!selectedUserDetails) {
         showAlert("Nessun utente caricato per la modifica.");

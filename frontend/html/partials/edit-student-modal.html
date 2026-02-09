@@ -1,0 +1,97 @@
+<div
+  class="modal fade"
+  id="editStudentModal"
+  tabindex="-1"
+  aria-labelledby="editStudentModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editStudentModalLabel">Modifica studente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" id="edit-student-form">
+          <div class="col-md-6">
+            <label for="edit-student-first-name" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="edit-student-first-name" required />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-last-name" class="form-label">Cognome</label>
+            <input type="text" class="form-control" id="edit-student-last-name" required />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="edit-student-email" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-phone" class="form-label">Telefono</label>
+            <input type="tel" class="form-control" id="edit-student-phone" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-cf" class="form-label">Codice fiscale</label>
+            <input type="text" class="form-control" id="edit-student-cf" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-birth" class="form-label">Data di nascita</label>
+            <input type="date" class="form-control" id="edit-student-birth" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-country" class="form-label">Paese</label>
+            <input type="text" class="form-control" id="edit-student-country" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-city" class="form-label">Città</label>
+            <input type="text" class="form-control" id="edit-student-city" />
+          </div>
+          <div class="col-md-8">
+            <label for="edit-student-address" class="form-label">Indirizzo</label>
+            <input type="text" class="form-control" id="edit-student-address" />
+          </div>
+          <div class="col-md-4">
+            <label for="edit-student-cap" class="form-label">CAP</label>
+            <input type="text" class="form-control" id="edit-student-cap" />
+          </div>
+          <div class="col-12">
+            <hr class="my-2" />
+            <h6 class="text-primary mb-1">Dati pagante</h6>
+            <p class="text-muted small mb-0">
+              Compila questi campi se il pagante è diverso dallo studente.
+            </p>
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-payer-first-name" class="form-label">Nome pagante</label>
+            <input type="text" class="form-control" id="edit-student-payer-first-name" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-payer-last-name" class="form-label">Cognome pagante</label>
+            <input type="text" class="form-control" id="edit-student-payer-last-name" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-payer-cf" class="form-label">Codice fiscale pagante</label>
+            <input type="text" class="form-control" id="edit-student-payer-cf" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-payer-email" class="form-label">Email pagante</label>
+            <input type="email" class="form-control" id="edit-student-payer-email" />
+          </div>
+          <div class="col-md-6">
+            <label for="edit-student-payer-phone" class="form-label">Telefono pagante</label>
+            <input type="tel" class="form-control" id="edit-student-payer-phone" />
+          </div>
+          <div class="col-md-8">
+            <label for="edit-student-payer-address" class="form-label">Indirizzo pagante</label>
+            <input type="text" class="form-control" id="edit-student-payer-address" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="submit" class="btn btn-primary" form="edit-student-form">
+          Salva modifiche
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
