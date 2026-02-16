@@ -22,7 +22,7 @@ class Studente(Base):
 
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
 
-    tutor_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
+    tutor_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'), nullable=False)
 
     nome: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)
     cognome: Mapped[str] = mapped_column(VARCHAR(100), nullable=False)

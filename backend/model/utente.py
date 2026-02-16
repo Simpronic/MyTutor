@@ -115,8 +115,8 @@ class Utente(Base):
 class UtenteRuolo(Base):
     __tablename__ = "utente_ruolo"
 
-    utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), primary_key=True)
-    ruolo_id: Mapped[int] = mapped_column(SMALLINT(unsigned=True), ForeignKey("ruolo.id"), primary_key=True)
+    utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True)
+    ruolo_id: Mapped[int] = mapped_column(SMALLINT(unsigned=True), ForeignKey("ruolo.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True)
     assegnato_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     utente: Mapped["Utente"] = relationship("Utente", back_populates="ruoli_link")

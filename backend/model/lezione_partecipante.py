@@ -15,8 +15,8 @@ class LezionePartecipante(Base):
     __tablename__ = "lezione_partecipante"
     __table_args__ = (Index("idx_lp_studente", "studente_id"),)
 
-    lezione_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id"), primary_key=True)
-    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("studente.id"), primary_key=True)
+    lezione_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True)
+    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("studente.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True)
 
     presenza: Mapped[str] = mapped_column(
         Enum(*LEZIONE_PRESENZA, name="lezione_presenza"),

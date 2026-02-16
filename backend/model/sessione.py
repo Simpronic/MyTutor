@@ -14,7 +14,7 @@ class Sessione(Base):
     __table_args__ = (UniqueConstraint("utente_id", name="uq_sessione_utente_id"),)
 
     token: Mapped[str] = mapped_column(VARCHAR(128), primary_key=True)
-    utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
+    utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     last_seen_at: Mapped[datetime | None] = mapped_column(DATETIME, nullable=True)
     expires_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False)

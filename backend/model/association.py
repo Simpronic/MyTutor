@@ -5,6 +5,6 @@ from backend.db.base import Base
 utente_ruolo = Table(
     "utente_ruolo",
     Base.metadata,
-    Column("utente_id", BigInteger, ForeignKey("utente.id"), primary_key=True),
-    Column("ruolo_id", SmallInteger, ForeignKey("ruolo.id"), primary_key=True),
+    Column("utente_id", BigInteger, ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True),
+    Column("ruolo_id", SmallInteger, ForeignKey("ruolo.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True),
 )

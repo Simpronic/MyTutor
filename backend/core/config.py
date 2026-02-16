@@ -8,6 +8,10 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 CFG_PATH = BASE_DIR / "cfg" / "appconf.cfg"
 
 
+def _cfg_bool(cfg: configparser.ConfigParser, section: str, option: str, fallback: bool) -> bool:
+    raw = cfg.get(section, option, fallback=str(fallback))
+    return str(raw).strip().lower() in {"1", "true", "yes", "on"}
+
 def _load_cfg() -> configparser.ConfigParser:
     cfg = configparser.ConfigParser()
     if not CFG_PATH.exists():
@@ -26,6 +30,8 @@ class Settings:
     refresh_token_expire_days: int
     session_duration_minutes: int
     cors_allow_origins: list[str]
+    bootstrap_seed_enabled: bool
+    bootstrap_seed_file_path: str
 
 
 def get_settings() -> Settings:
@@ -53,4 +59,10 @@ def get_settings() -> Settings:
             for item in cfg.get("CORS", "ALLOW_ORIGINS", fallback="*").split(",")
             if item.strip()
         ],
+        bootstrap_seed_enabled=_cfg_bool(cfg, "BOOTSTRAP", "SEED_ON_STARTUP", True),
+        bootstrap_seed_file_path=cfg.get(
+            "BOOTSTRAP",
+            "SEED_FILE_PATH",
+            fallback=str(BASE_DIR / "cfg" / "bootstrap_seed.json"),
+        )
     )

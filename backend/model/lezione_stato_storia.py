@@ -15,12 +15,12 @@ class LezioneStatoStoria(Base):
     __tablename__ = "lezione_stato_storia"
 
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
-    lezione_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id"), nullable=False)
+    lezione_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id",ondelete='CASCADE',onupdate='CASCADE'), nullable=False)
 
     da_stato: Mapped[Optional[str]] = mapped_column(Enum(*LEZIONE_STATO, name="lezione_stato"), nullable=True)
     a_stato: Mapped[str] = mapped_column(Enum(*LEZIONE_STATO, name="lezione_stato"), nullable=False)
 
-    cambiato_da: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=True)
+    cambiato_da: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'), nullable=True)
     cambiato_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     motivo: Mapped[Optional[str]] = mapped_column(VARCHAR(255), nullable=True)
 

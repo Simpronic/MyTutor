@@ -7,6 +7,6 @@ from backend.db.base import Base
 ruolo_permesso = Table(
     "ruolo_permesso",
     Base.metadata,
-    Column("ruolo_id", SMALLINT(unsigned=True), ForeignKey("ruolo.id"), primary_key=True),
-    Column("permesso_id", SMALLINT(unsigned=True), ForeignKey("permesso.id"), primary_key=True),
+    Column("ruolo_id", SMALLINT(unsigned=True), ForeignKey("ruolo.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True),
+    Column("permesso_id", SMALLINT(unsigned=True), ForeignKey("permesso.id",ondelete='CASCADE',onupdate='CASCADE'), primary_key=True),
 )

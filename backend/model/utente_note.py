@@ -16,7 +16,7 @@ class UtenteNote(Base):
     __tablename__ = "utente_note"
 
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
-    utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
+    utente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'), nullable=False)
 
     tipo: Mapped[str] = mapped_column(
         Enum(*NOTE_TIPO, name="utente_note_tipo"),
@@ -25,7 +25,7 @@ class UtenteNote(Base):
     )
     testo: Mapped[str] = mapped_column(TEXT, nullable=False)
 
-    creato_da: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"))
+    creato_da: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'))
     created_at: Mapped[datetime] = mapped_column(DATETIME, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     utente: Mapped["Utente"] = relationship("Utente", foreign_keys=[utente_id], back_populates="note")

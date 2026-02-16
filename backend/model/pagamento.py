@@ -18,9 +18,9 @@ class Pagamento(Base):
 
     id: Mapped[int] = mapped_column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
 
-    lezione_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id"))
-    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("studente.id"), nullable=False)
-    tutor_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"))
+    lezione_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("lezione.id",ondelete='CASCADE',onupdate='CASCADE'))
+    studente_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("studente.id",ondelete='CASCADE',onupdate='CASCADE'), nullable=False)
+    tutor_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id",ondelete='CASCADE',onupdate='CASCADE'))
 
     importo: Mapped[float] = mapped_column(DECIMAL(10, 2), nullable=False)
     valuta: Mapped[str] = mapped_column(CHAR(3), nullable=False, server_default=text("'EUR'"))

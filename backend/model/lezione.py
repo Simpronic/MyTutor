@@ -20,7 +20,6 @@ class Lezione(Base):
     tutor_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("utente.id"), nullable=False)
 
     materia_id: Mapped[int] = mapped_column(BIGINT(unsigned=True), ForeignKey("materia.id"), nullable=False)
-    argomento_id: Mapped[Optional[int]] = mapped_column(BIGINT(unsigned=True), ForeignKey("argomento.id"))
 
     data_inizio: Mapped[datetime] = mapped_column(DATETIME, nullable=False)
     data_fine: Mapped[datetime] = mapped_column(DATETIME, nullable=False)
