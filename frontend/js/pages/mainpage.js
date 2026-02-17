@@ -1,5 +1,6 @@
-import { API_STUDENTS_URL_BASE, authFetch } from "../core/api.js";
+import { API_LESSONS_URL_BASE, API_STUDENTS_URL_BASE, authFetch } from "../core/api.js";
 import { setupCreateStudentModal } from "../components/createStudentModal.js";
+import { setupCreateLessonModal } from "../components/createLessonModal.js";
 import { enforceGuards, logout } from "../core/router.js";
 
 enforceGuards({ requireAuth: true, requireRole: true });
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const plusButton = document.getElementById('plusButton');
   const toolbarMenu = document.getElementById('toolbarMenu');
   const openCreateStudentButton = document.getElementById("open-create-student");
+  const openCreateLessonButton = document.getElementById("open-create-lesson");
   renderWelcome();
   
   const logoutBtn = document.getElementById("logout");
@@ -46,16 +48,34 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   setupCreateStudentModal({ authFetch, studentsBaseUrl: API_STUDENTS_URL_BASE })
-      .then((openModal) => {
-        if (!openModal || !openCreateStudentButton) return;
-        openCreateStudentButton.addEventListener("click", () => {
-          toolbarMenu.style.display = "none";
-          openModal();
+    .then((openModal) => {
+          if (!openModal || !openCreateStudentButton) return;
+          openCreateStudentButton.addEventListener("click", () => {
+            toolbarMenu.style.display = "none";
+            openModal();
+          });
+        })
+        .catch((error) => {
+          console.warn("Errore nel caricamento modale studente:", error);
         });
-      })
-      .catch((error) => {
-        console.warn("Errore nel caricamento modale studente:", error);
+
+  setupCreateLessonModal({
+    authFetch,
+    studentsBaseUrl: API_STUDENTS_URL_BASE,
+    lessonsBaseUrl: API_LESSONS_URL_BASE,
+  })
+    .then((openModal) => {
+      if (!openModal || !openCreateLessonButton) return;
+      openCreateLessonButton.addEventListener("click", async () => {
+        toolbarMenu.style.display = "none";
+        await openModal();
       });
+    })
+    .catch((error) => {
+      console.warn("Errore nel caricamento modale lezione:", error);
+    });
+
+
 });
 
 window.addEventListener("pageshow", renderWelcome);

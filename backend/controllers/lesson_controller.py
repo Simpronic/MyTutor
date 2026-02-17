@@ -14,6 +14,7 @@ from backend.schemas.lesson_controller_schemas import (
     LessonResponse,
     LessonStatusUpdateRequest,
     LessonUpdateRequest,
+    SubjectOptionResponse
 )
 
 router = APIRouter(prefix="/lessons", tags=["lessons"])
@@ -58,7 +59,7 @@ def update_lesson(
     return lesson_service.update_lesson(db,user,lesson_id,payload)
 
 
-@router.patch("/{lesson_id}/status", response_model=LessonResponse)
+@router.patch("/status/{lesson_id}", response_model=LessonResponse)
 def update_lesson_status(
     lesson_id: int,
     payload: LessonStatusUpdateRequest,
@@ -67,8 +68,14 @@ def update_lesson_status(
 ) -> LessonResponse:
     return lesson_service.update_lesson_status(db,user,lesson_id,payload)
 
+@router.get("/allMaterie", response_model=list[SubjectOptionResponse]) 
+def list_subjects(
+    _: Utente = Depends(require_permission("LESSON_READ")),
+    db: Session = Depends(get_db),
+) -> List[SubjectOptionResponse]:
+    return lesson_service.list_subjects(db)
 
-@router.delete("/{lesson_id}")
+@router.delete("/delete/{lesson_id}")
 def delete_lesson(
     lesson_id: int,
     db: Session = Depends(get_db),

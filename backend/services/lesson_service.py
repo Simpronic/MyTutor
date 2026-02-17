@@ -4,13 +4,14 @@ from typing import List
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-
+import datetime 
 from backend.model import Lezione, LezionePartecipante, Materia, Studente, Utente
 from backend.schemas.lesson_controller_schemas import (
     LessonCreateRequest,
     LessonResponse,
     LessonStatusUpdateRequest,
     LessonUpdateRequest,
+    SubjectOptionResponse
 )
 
 
@@ -32,7 +33,7 @@ def create_lesson(
             detail="Materia non valida",
         )
 
-    materia = db.query(Materia).filter(Materia.nome == materia_code).one_or_none()
+    materia = db.query(Materia).filter(Materia.id == materia_code).one_or_none()
     if materia is None:
         materia = Materia(nome=materia_code)
         db.add(materia)
@@ -40,7 +41,7 @@ def create_lesson(
 
     student = (
         db.query(Studente)
-        .filter(Studente.id == payload.student_id, Studente.tutor_id == payload.tutor_id)
+        .filter(Studente.id == payload.student_id, Studente.tutor_id == user.id)
         .one_or_none()
     )
     if student is None:
@@ -52,7 +53,7 @@ def create_lesson(
     overlapping = (
         db.query(Lezione)
         .filter(
-            Lezione.tutor_id == payload.tutor_id,
+            Lezione.tutor_id == user.id,
             Lezione.data_inizio < payload.end_at,
             Lezione.data_fine > payload.start_at,
         )
@@ -77,7 +78,31 @@ def create_lesson(
     db.add(LezionePartecipante(lezione_id=lezione.id, studente_id=student.id))
     db.commit()
     db.refresh(lezione)
-    return LessonResponse.model_validate(lezione)
+    return LessonResponse(
+        id= lezione.id,
+        tutor_id=user.id,
+        student_id= student.id,
+        materia_id=materia.id,
+        status=lezione.stato,
+        data_inizio=lezione.data_inizio,
+        data_fine=lezione.data_fine,
+        note=lezione.note,
+        created_at = datetime.datetime.now(),
+        updated_at=datetime.datetime.now()
+    )
+
+def list_subjects(
+    db: Session
+) -> List[SubjectOptionResponse]:
+    subjects = (
+        db.query(Materia)
+        .all()
+    )
+    materie = [
+        SubjectOptionResponse(code=subject.id, label=subject.nome)
+        for subject in subjects
+    ]
+    return materie
 
 
 def list_lessons(

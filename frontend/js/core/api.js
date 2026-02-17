@@ -4,6 +4,7 @@ export const API_BASE_URL =
 export const API_AUTH_URL_BASE = API_BASE_URL + "/auth";
 export const API_USER_MANAGEMENT_URL_BASE = API_BASE_URL + "/userManagement";
 export const API_STUDENTS_URL_BASE = API_BASE_URL + "/students";
+export const API_LESSONS_URL_BASE = API_BASE_URL + "/lessons";
 
 const SESSION_TOKEN_KEY = "session_token";
 const LOGIN_PAGE = "./index.html";

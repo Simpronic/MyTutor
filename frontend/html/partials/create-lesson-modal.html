@@ -1,0 +1,74 @@
+<div
+  class="modal fade"
+  id="createLessonModal"
+  tabindex="-1"
+  aria-labelledby="createLessonModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createLessonModalLabel">Aggiungi lezione</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" id="create-lesson-form">
+          <div class="col-md-6">
+            <label for="create-lesson-student" class="form-label">Studente</label>
+            <select class="form-select" id="create-lesson-student" required>
+              <option value="" selected disabled>Seleziona uno studente</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="create-lesson-subject" class="form-label">Materia</label>
+            <select class="form-select" id="create-lesson-subject" required>
+              <option value="" selected disabled>Seleziona una materia</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="create-lesson-start" class="form-label">Inizio</label>
+            <input type="datetime-local" class="form-control" id="create-lesson-start" required />
+          </div>
+          <div class="col-md-6">
+            <label for="create-lesson-end" class="form-label">Fine</label>
+            <input type="datetime-local" class="form-control" id="create-lesson-end" required />
+          </div>
+
+          <div class="col-md-6">
+            <label for="create-lesson-location" class="form-label">Luogo</label>
+            <select class="form-select" id="create-lesson-location" required>
+              <option value="remoto" selected>Remoto</option>
+              <option value="presenza">In presenza</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="create-lesson-status" class="form-label">Stato</label>
+            <select class="form-select" id="create-lesson-status" required>
+              <option value="prenotata" selected>Prenotata</option>
+              <option value="confermata">Confermata</option>
+              <option value="svolta">Svolta</option>
+              <option value="annullata">Annullata</option>
+              <option value="no_show">No show</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label for="create-lesson-note" class="form-label">Note</label>
+            <textarea class="form-control" id="create-lesson-note" rows="3" placeholder="Argomenti, obiettivi, dettagli..."></textarea>
+          </div>
+
+          <div class="col-12">
+            <div class="small text-muted" id="create-lesson-feedback"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="submit" class="btn btn-primary" form="create-lesson-form" id="submit-create-lesson">
+          Salva lezione
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

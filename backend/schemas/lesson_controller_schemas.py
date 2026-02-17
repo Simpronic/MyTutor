@@ -29,11 +29,15 @@ class LessonResponse(BaseModel):
     student_id: int
     materia_id: int
     status: str
-    start_at: datetime
-    end_at: datetime
+    data_inizio: datetime
+    data_fine: datetime
     note: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
+
+class SubjectOptionResponse(BaseModel):
+    code: int
+    label: str

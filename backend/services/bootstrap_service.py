@@ -81,7 +81,7 @@ def _upsert_permissions(db: Session,payload: dict[str, Any]) -> None:
         permission.descrizione = permission_data.get("description")
 
 def _upsert_materie(db: Session,payload: dict[str, Any]) -> None:
-    for subject in payload.get("paesi",[]):
+    for subject in payload.get("materie",[]):
         subject_name = subject['nome']
         subject_data = db.scalar(select(Materia).where(Materia.nome == subject_name))
         if(subject_data is None):
