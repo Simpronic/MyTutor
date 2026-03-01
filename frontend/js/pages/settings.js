@@ -99,9 +99,13 @@ async function setupPermissions() {
 document.addEventListener("DOMContentLoaded", setupPermissions);
 
 async function insertStudentsTab() {
+  const existingPane = document.getElementById("students");
+  if (existingPane) {
+    return existingPane;
+  }
   const root = document.getElementById("students-tab-root");
-  if (!root || root.dataset.tabLoaded === "true") {
-    return root;
+  if (!root) {
+    return null;
   }
 
   const tabUrl = new URL("./partials/students-tab.html", window.location.href);
@@ -110,9 +114,15 @@ async function insertStudentsTab() {
     throw new Error(`Errore caricamento tab studenti: HTTP ${response.status}`);
   }
 
-  root.innerHTML = await response.text();
-  root.dataset.tabLoaded = "true";
-  return root;
+  const template = document.createElement("template");
+    template.innerHTML = (await response.text()).trim();
+    const studentsPane = template.content.firstElementChild;
+    if (!studentsPane) {
+      throw new Error("Markup tab studenti non valido.");
+    }
+
+    root.replaceWith(studentsPane);
+    return studentsPane;
 }
 
 async function setupStudentsTab() {
@@ -120,7 +130,7 @@ async function setupStudentsTab() {
   const studentsTab = document.getElementById("students-tab");
   const studentsPane = document.getElementById("students");
   const roleName = getActiveRoleName();
-  const canManageStudents = roleName === "tutor";
+  const canManageStudents = ["tutor", "sw_admin", "system_admin"].includes(roleName);
 
   if (canManageStudents) {
     studentsTab.classList.remove("d-none");
@@ -221,6 +231,26 @@ async function loadUserDetailsModal() {
     console.warn("Impossibile caricare la modale dettagli utente:", error);
   }
 }
+
+async function loadTutorStudentsModal() {
+  const root = document.getElementById("tutor-student-modal-root");
+  if (!root || root.dataset.modalLoaded === "true") {
+    return;
+  }
+
+  try {
+    const modalUrl = new URL("./partials/tutor-student-modal.html", window.location.href);
+    const response = await fetch(modalUrl);
+    if (!response.ok) {
+      throw new Error(`Errore caricamento modale: HTTP ${response.status}`);
+    }
+    root.innerHTML = await response.text();
+    root.dataset.modalLoaded = "true";
+  } catch (error) {
+    console.warn("Impossibile caricare la modale studenti per tutor:", error);
+  }
+}
+
 async function loadStudentDetailsModal() {
   const root = document.getElementById("student-details-modal-root");
   if (!root || root.dataset.modalLoaded === "true") {
@@ -522,6 +552,77 @@ async function loadStudents() {
     list.innerHTML = `<div class="list-group-item text-danger">Errore nel caricamento studenti.</div>`;
   }
 }
+
+function renderTutorStudentsContent(tutors = []) {
+  const container = document.getElementById("tutor-students-content");
+  if (!container) return;
+
+  if (!Array.isArray(tutors) || tutors.length === 0) {
+    container.innerHTML = '<div class="text-muted">Nessun tutor trovato.</div>';
+    return;
+  }
+
+  container.innerHTML = "";
+  tutors.forEach((tutor) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "border rounded p-3";
+
+    const title = document.createElement("h6");
+    title.className = "mb-2";
+    const tutorLabel = `${tutor?.tutor_cognome || ""} ${tutor?.tutor_nome || ""}`.trim() || "Tutor";
+    const studentsCount = Array.isArray(tutor?.studenti) ? tutor.studenti.length : 0;
+    title.textContent = `${tutorLabel} (${studentsCount})${tutor?.tutor_email ? ` • ${tutor.tutor_email}` : ""}`;
+    wrapper.appendChild(title);
+
+    if (!studentsCount) {
+      const empty = document.createElement("div");
+      empty.className = "text-muted small";
+      empty.textContent = "Nessuno studente associato.";
+      wrapper.appendChild(empty);
+    } else {
+      const list = document.createElement("ul");
+      list.className = "mb-0";
+      tutor.studenti.forEach((student) => {
+        const item = document.createElement("li");
+        item.textContent = `${formatStudentLabel(student)}${student?.email ? ` • ${student.email}` : ""}`;
+        list.appendChild(item);
+      });
+      wrapper.appendChild(list);
+    }
+
+    container.appendChild(wrapper);
+  });
+}
+
+async function openStudentsByTutorModal() {
+  const modalElement = document.getElementById("tutorStudentsModal");
+  const content = document.getElementById("tutor-students-content");
+  if (!modalElement || !content) {
+    showAlert("Modale studenti per tutor non disponibile.");
+    return;
+  }
+
+  content.innerHTML = '<div class="text-muted">Caricamento in corso...</div>';
+  if (window.bootstrap?.Modal) {
+    const modalInstance =
+      window.bootstrap.Modal.getInstance(modalElement) ||
+      new window.bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  try {
+    const response = await authFetch(`${API_STUDENTS_URL_BASE}/byTutor`, { method: "GET" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    renderTutorStudentsContent(data?.tutors || []);
+  } catch (error) {
+    console.warn("Errore nel caricamento studenti per tutor:", error);
+    content.innerHTML = '<div class="text-danger">Errore nel caricamento dei dati.</div>';
+  }
+}
+
 
 async function fetchStudentDetails(studentId) {
   const response = await authFetch(`${API_STUDENTS_URL_BASE}/getStudent/${encodeURIComponent(studentId)}`, {
@@ -875,6 +976,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadUserDetailsModal();
   await loadStudentDetailsModal();
   await loadEditStudentModal();
+  await loadTutorStudentsModal();
   const editProfileButton = document.querySelector(selectors.editProfile);
   if (editProfileButton) {
     editProfileButton.addEventListener("click", () => {
@@ -957,6 +1059,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
+  const viewStudentsByTutorButton = document.getElementById("view-students-by-tutor");
+  
+  if (viewStudentsByTutorButton) {
+    const roleName = getActiveRoleName();
+    const canViewByTutor = ["sw_admin", "system_admin"].includes(roleName);
+    viewStudentsByTutorButton.classList.toggle("d-none", !canViewByTutor);
+    if (canViewByTutor) {
+      viewStudentsByTutorButton.addEventListener("click", openStudentsByTutorModal);
+    }
+  }
+
 
   const refreshStudentsButton = document.getElementById("refresh-students");
   if (refreshStudentsButton) {

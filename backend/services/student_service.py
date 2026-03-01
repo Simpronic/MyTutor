@@ -17,6 +17,12 @@ from backend.schemas.student_controller_schemas import (
 )
 
 
+ADMIN_STUDENT_VIEW_ROLES = {"SYSTEM_ADMIN", "SW_ADMIN"}
+
+
+def _can_view_all_students(user: Utente) -> bool:
+    return any((role.nome or "").upper() in ADMIN_STUDENT_VIEW_ROLES for role in user.ruoli)
+
 def _ensure_unique_student_fields(
     db: Session,
     tutor_id: int,
@@ -108,9 +114,9 @@ def create_student(
 def list_students(db: Session, user: Utente) -> list[StudentResponse]:
     query = db.query(Studente)
     query = query.filter(Studente.tutor_id == user.id)
-
+    if not _can_view_all_students(user):
+        query = query.filter(Studente.tutor_id == user.id)
     return query.order_by(Studente.cognome, Studente.nome).all()
-
 
 def list_students_grouped_by_tutor(db: Session, user: Utente) -> TutorStudentsResponse:
     students_query = db.query(Studente)
@@ -140,7 +146,15 @@ def list_students_grouped_by_tutor(db: Session, user: Utente) -> TutorStudentsRe
 
 
 def get_student(db: Session, user: Utente, student_id: int) -> StudentResponse:
-    student = _get_student_for_tutor(db, user.id, student_id)
+    if _can_view_all_students(user):
+        student = db.query(Studente).filter(Studente.id == student_id).first()
+        if student is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Studente non trovato",
+            )
+    else:
+        student = _get_student_for_tutor(db, user.id, student_id)
     return StudentResponse.model_validate(student)
 
 
