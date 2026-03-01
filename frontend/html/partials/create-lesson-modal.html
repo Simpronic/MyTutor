@@ -14,10 +14,9 @@
       <div class="modal-body">
         <form class="row g-3" id="create-lesson-form">
           <div class="col-md-6">
-            <label for="create-lesson-student" class="form-label">Studente</label>
-            <select class="form-select" id="create-lesson-student" required>
-              <option value="" selected disabled>Seleziona uno studente</option>
-            </select>
+            <label for="create-lesson-student" class="form-label">Studenti</label>
+            <select class="form-select" id="create-lesson-student" required multiple size="6"></select>
+            <div class="form-text">Puoi selezionare più studenti (Ctrl/Cmd + click).</div>
           </div>
           <div class="col-md-6">
             <label for="create-lesson-subject" class="form-label">Materia</label>

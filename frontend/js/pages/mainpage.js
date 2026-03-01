@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const toolbarMenu = document.getElementById('toolbarMenu');
   const openCreateStudentButton = document.getElementById("open-create-student");
   const openCreateLessonButton = document.getElementById("open-create-lesson");
+  const openLessonsPageButton = document.getElementById("open-lessons-page");
   renderWelcome();
   
   const logoutBtn = document.getElementById("logout");
@@ -46,6 +47,13 @@ document.addEventListener("DOMContentLoaded", function () {
       await logout();
     }
   });
+
+  if (openLessonsPageButton) {
+    openLessonsPageButton.addEventListener("click", () => {
+      toolbarMenu.style.display = "none";
+      window.location.href = "./lessons.html";
+    });
+  }
 
   setupCreateStudentModal({ authFetch, studentsBaseUrl: API_STUDENTS_URL_BASE })
     .then((openModal) => {

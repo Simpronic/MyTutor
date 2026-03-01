@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lezioni</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="../css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+  <link href="../css/style2.css" rel="stylesheet" />
+
+  <script defer src="../js/bootstrap.bundle.js"></script>
+  <script type="module" defer src="../js/pages/lessonsPage.js"></script>
+</head>
+<body style="background-color: #f0f2f5;">
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #007bff;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="./MainPage.html">Dashboard</a>
+      <span class="navbar-text text-white">Lezioni</span>
+    </div>
+  </nav>
+
+  <main class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="text-primary m-0">Visualizza lezioni</h3>
+      <button id="refresh-lessons" class="btn btn-outline-primary btn-sm" type="button">Ricarica</button>
+    </div>
+
+    <ul class="nav nav-tabs" id="lessonViewsTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="calendar-view-tab" data-bs-toggle="tab" data-bs-target="#calendar-view" type="button" role="tab" aria-controls="calendar-view" aria-selected="true">Calendario</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="list-view-tab" data-bs-toggle="tab" data-bs-target="#list-view" type="button" role="tab" aria-controls="list-view" aria-selected="false">Elenco</button>
+      </li>
+    </ul>
+
+    <div class="tab-content bg-white border border-top-0 rounded-bottom p-3" id="lessonViewsTabsContent">
+      <div class="tab-pane fade show active" id="calendar-view" role="tabpanel" aria-labelledby="calendar-view-tab" tabindex="0">
+        <div id="calendar-toolbar" class="d-flex justify-content-between align-items-center my-2">
+          <button id="prev-month" class="btn btn-outline-secondary btn-sm" type="button">◀</button>
+          <h5 id="calendar-month-label" class="m-0 text-primary"></h5>
+          <button id="next-month" class="btn btn-outline-secondary btn-sm" type="button">▶</button>
+        </div>
+        <div id="calendar-grid" class="row g-2"></div>
+      </div>
+
+      <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="list-view-tab" tabindex="0">
+        <div class="d-flex gap-2 align-items-center mt-2 mb-2 small">
+          <span class="badge text-bg-warning">prenotata</span>
+          <span class="badge text-bg-primary">confermata</span>
+          <span class="badge text-bg-success">svolta</span>
+          <span class="badge text-bg-danger">annullata</span>
+          <span class="badge text-bg-secondary">no_show</span>
+        </div>
+        <div id="lessons-list" class="list-group mt-2">
+          <div class="list-group-item text-muted">Caricamento lezioni...</div>
+        </div>
+      <div class="mt-3 p-3 border rounded" id="selected-lesson-box">
+        <h6 class="text-primary">Lezione selezionata</h6>
+        <div id="selected-lesson-content" class="small text-muted">Nessuna lezione selezionata.</div>
+      </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

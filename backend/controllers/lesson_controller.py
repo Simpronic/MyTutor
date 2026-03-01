@@ -29,14 +29,14 @@ def createLesson(
 ) -> LessonResponse:
     return lesson_service.create_lesson(db,user,payload)
 
-@router.get("user/getAllLessons", response_model=List[LessonResponse])
-def createLesson(
+@router.get("/user/getAllLessons", response_model=List[LessonResponse])
+def get_user_lessons(
     start: Optional[date] = None,
     end: Optional[date] = None,
     user:Utente = Depends(require_permission("LESSON_READ")),
     db: Session = Depends(get_db)  
 ) -> List[LessonResponse]:
-    return lesson_service.list_lessons(db,user,[start,end])
+    return lesson_service.list_lessons(db,user,start,end)
 
 
 @router.get("/getAllLessons", response_model=List[LessonResponse])

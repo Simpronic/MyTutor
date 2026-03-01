@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class LessonCreateRequest(BaseModel):
-    student_id: int
+    student_ids: list[int]
     materia_code: str
     start_at: datetime
     end_at: datetime
@@ -22,11 +22,16 @@ class LessonStatusUpdateRequest(BaseModel):
     status: str = Field(..., min_length=1, max_length=50)
     reason: Optional[str] = None
 
+class LessonStudentInfo(BaseModel):
+    id: int
+    nome: str
+    cognome: str
 
+    
 class LessonResponse(BaseModel):
     id: int
     tutor_id: int
-    student_id: int
+    students: list[LessonStudentInfo]
     materia_id: int
     status: str
     data_inizio: datetime

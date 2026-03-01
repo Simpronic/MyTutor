@@ -11,8 +11,32 @@ from backend.schemas.lesson_controller_schemas import (
     LessonResponse,
     LessonStatusUpdateRequest,
     LessonUpdateRequest,
-    SubjectOptionResponse
+    SubjectOptionResponse,
+    LessonStudentInfo
 )
+
+
+def _to_lesson_response(lezione: Lezione) -> LessonResponse:
+    students = [
+        LessonStudentInfo(
+            id=participant.studente.id,
+            nome=participant.studente.nome,
+            cognome=participant.studente.cognome,
+    )
+    for participant in lezione.partecipanti_link
+]
+    return LessonResponse(
+        id=lezione.id,
+        tutor_id=lezione.tutor_id,
+        students=students,
+        materia_id=lezione.materia_id,
+        status=lezione.stato,
+        data_inizio=lezione.data_inizio,
+        data_fine=lezione.data_fine,
+        note=lezione.note,
+        created_at=lezione.created_at,
+        updated_at=lezione.updated_at,
+    )
 
 
 def create_lesson(
@@ -26,6 +50,12 @@ def create_lesson(
             detail="Intervallo orario non valido",
         )
 
+    student_ids = sorted(set(payload.student_ids or []))
+    if not student_ids:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Seleziona almeno uno studente",
+        )
     materia_code = payload.materia_code.strip().upper()
     if not materia_code:
         raise HTTPException(
@@ -39,15 +69,15 @@ def create_lesson(
         db.add(materia)
         db.flush()
 
-    student = (
+    students = (
         db.query(Studente)
-        .filter(Studente.id == payload.student_id, Studente.tutor_id == user.id)
-        .one_or_none()
+        .filter(Studente.tutor_id == user.id, Studente.id.in_(student_ids))
+        .all()
     )
-    if student is None:
+    if len(students) != len(student_ids):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Studente non trovato",
+            detail="Uno o più studenti non trovati",
         )
 
     overlapping = (
@@ -75,21 +105,11 @@ def create_lesson(
     db.add(lezione)
     db.flush()
 
-    db.add(LezionePartecipante(lezione_id=lezione.id, studente_id=student.id))
+    for student_id in student_ids:
+        db.add(LezionePartecipante(lezione_id=lezione.id, studente_id=student_id))
     db.commit()
     db.refresh(lezione)
-    return LessonResponse(
-        id= lezione.id,
-        tutor_id=user.id,
-        student_id= student.id,
-        materia_id=materia.id,
-        status=lezione.stato,
-        data_inizio=lezione.data_inizio,
-        data_fine=lezione.data_fine,
-        note=lezione.note,
-        created_at = datetime.now(),
-        updated_at=datetime.now()
-    )
+    return _to_lesson_response(lezione)
 
 def list_subjects(
     db: Session
@@ -111,39 +131,38 @@ def list_lessons(
     start: Optional[date],
     end: Optional[date]
 ) -> List[LessonResponse]:
+    query = db.query(Lezione).filter(Lezione.tutor_id == user.id)
+
     if start is not None and end is not None:
         if start > end:
             raise ValueError("Intervallo non valido: start > end")
-        return db.query(Lezione).filter(
-                    Lezione.tutor_id == user.id,
-                    Lezione.data_fine.between(start, end))
+        query = query.filter(Lezione.data_inizio >= start, Lezione.data_fine <= end)
     elif start is not None:
-        return db.query(Lezione).filter(
-            Lezione.tutor_id == user.id,
-            Lezione.data_inizio == start
-        )
+        query = query.filter(Lezione.data_inizio >= start)
     elif end is not None:
-        return db.query(Lezione).filter(
-            Lezione.tutor_id == user.id,
-            Lezione.data_fine == end
-        )
-    return db.query(Lezione).filter(
-        Lezione.tutor_id == user.id
-    )
+        query = query.filter(Lezione.data_fine <= end)
+        query = query.filter(Lezione.data_fine <= end)
+
+    lessons = query.order_by(Lezione.data_inizio.asc()).all()
+    return [_to_lesson_response(lesson) for lesson in lessons]
 
 def list_all_lessons(
         db:Session
 ) -> List[LessonResponse]:
-    return db.query(Lezione).all()
+    lessons = db.query(Lezione).order_by(Lezione.data_inizio.asc()).all()
+    return [_to_lesson_response(lesson) for lesson in lessons]
 
 def get_lesson(
     db: Session,
     user: Utente,
     lesson_id: int,
 ) -> LessonResponse:
-    return db.query(Lezione).filter(Lezione.id == lesson_id,
+    lesson = db.query(Lezione).filter(Lezione.id == lesson_id,
                                     Lezione.tutor_id == user.id
                                     ).one_or_none()
+    if lesson is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lezione non trovata")
+    return _to_lesson_response(lesson)
 
 
 def update_lesson(

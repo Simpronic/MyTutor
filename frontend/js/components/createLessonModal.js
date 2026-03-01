@@ -42,6 +42,14 @@ function getValue(selector) {
   return input ? String(input.value || "").trim() : "";
 }
 
+function getSelectedValues(selector) {
+  const select = document.querySelector(selector);
+  if (!select) return [];
+  return Array.from(select.selectedOptions || [])
+    .map((option) => Number(option.value))
+    .filter((value) => Number.isInteger(value) && value > 0);
+}
+
 function resetForm() {
   const form = document.querySelector(SELECTORS.form);
   if (form) form.reset();
@@ -51,7 +59,7 @@ async function loadStudents({ authFetch, studentsBaseUrl }) {
   const studentSelect = document.querySelector(SELECTORS.student);
   if (!studentSelect) return;
 
-  studentSelect.innerHTML = '<option value="" selected disabled>Seleziona uno studente</option>';
+  studentSelect.innerHTML = "";
   try {
     const response = await authFetch(`${studentsBaseUrl}/getStudents`);
     if (!response.ok) {
@@ -114,7 +122,7 @@ async function handleCreateLesson({ authFetch, lessonsBaseUrl }) {
   setFeedback("");
 
   const payload = {
-    student_id: Number(getValue(SELECTORS.student)),
+    student_ids: getSelectedValues(SELECTORS.student),
     materia_code: getValue(SELECTORS.subject),
     start_at: getValue(SELECTORS.startAt),
     end_at: getValue(SELECTORS.endAt),
@@ -124,7 +132,7 @@ async function handleCreateLesson({ authFetch, lessonsBaseUrl }) {
     
   };
 
-  if (!payload.student_id || !payload.materia_code || !payload.start_at || !payload.end_at) {
+  if (!payload.student_ids.length || !payload.materia_code || !payload.start_at || !payload.end_at){
     setFeedback("Compila tutti i campi obbligatori.", "danger");
     if (submitButton) submitButton.disabled = false;
     return;
