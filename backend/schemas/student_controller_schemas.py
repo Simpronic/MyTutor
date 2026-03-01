@@ -77,3 +77,15 @@ class StudentUpdateRequest(BaseModel):
 class StudentUpdateResponse(BaseModel):
     Result: int
     update_timestamp: datetime
+
+
+class TutorStudentsSummary(BaseModel):
+    tutor_id: int
+    tutor_nome: str
+    tutor_cognome: str
+    tutor_email: Optional[str] = None
+    studenti: list[StudentResponse]
+
+
+class TutorStudentsResponse(BaseModel):
+    tutors: list[TutorStudentsSummary]

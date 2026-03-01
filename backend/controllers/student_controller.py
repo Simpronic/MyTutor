@@ -10,6 +10,7 @@ from backend.schemas.student_controller_schemas import (
     StudentResponse,
     StudentUpdateRequest,
     StudentUpdateResponse,
+    TutorStudentsResponse,
 )
 from backend.security.dependencies import require_permission
 import backend.services.student_service as student_service
@@ -39,6 +40,13 @@ def create_student(
     db: Session = Depends(get_db),
 ) -> StudentResponse:
     return student_service.create_student(db, user, payload)
+
+@router.get("/byTutor", response_model=TutorStudentsResponse)
+def list_students_by_tutor(
+    user: Utente = Depends(require_permission("USER_STATISTICS")),
+    db: Session = Depends(get_db),
+) -> TutorStudentsResponse:
+    return student_service.list_students_grouped_by_tutor(db, user)
 
 @router.patch("/updateStudent/{student_id}", response_model=StudentUpdateResponse)
 def update_student(

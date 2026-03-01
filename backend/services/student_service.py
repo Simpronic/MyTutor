@@ -12,6 +12,8 @@ from backend.schemas.student_controller_schemas import (
     StudentResponse,
     StudentUpdateRequest,
     StudentUpdateResponse,
+    TutorStudentsResponse,
+    TutorStudentsSummary,
 )
 
 
@@ -104,12 +106,37 @@ def create_student(
 
 
 def list_students(db: Session, user: Utente) -> list[StudentResponse]:
-    return (
-        db.query(Studente)
-        .filter(Studente.tutor_id == user.id)
-        .order_by(Studente.cognome, Studente.nome)
-        .all()
-    )
+    query = db.query(Studente)
+    query = query.filter(Studente.tutor_id == user.id)
+
+    return query.order_by(Studente.cognome, Studente.nome).all()
+
+
+def list_students_grouped_by_tutor(db: Session, user: Utente) -> TutorStudentsResponse:
+    students_query = db.query(Studente)
+    tutors_query = db.query(Utente)
+
+    students = students_query.order_by(Studente.cognome, Studente.nome).all()
+    tutors = tutors_query.order_by(Utente.cognome, Utente.nome).all()
+
+    students_by_tutor: dict[int, list[Studente]] = {}
+    for student in students:
+        students_by_tutor.setdefault(student.tutor_id, []).append(student)
+
+    tutors_payload: list[TutorStudentsSummary] = []
+    for tutor in tutors:
+        tutor_students = students_by_tutor.get(tutor.id, [])
+        tutors_payload.append(
+                TutorStudentsSummary(
+                    tutor_id=tutor.id,
+                    tutor_nome=tutor.nome,
+                    tutor_cognome=tutor.cognome,
+                    tutor_email=tutor.email,
+                    studenti=[StudentResponse.model_validate(student) for student in tutor_students],
+                )
+            )
+
+    return TutorStudentsResponse(tutors=tutors_payload)
 
 
 def get_student(db: Session, user: Utente, student_id: int) -> StudentResponse:

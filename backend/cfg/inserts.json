@@ -10,16 +10,10 @@
     {"code": "USER_CREATE", "description": "Creare utenti"},
     {"code": "USER_UPDATE", "description": "Modificare utenti"},
     {"code": "USER_DISABLE", "description": "Disattivare utenti"},
+    {"code": "USER_STATISTICS","description":"Leggere le statistiche dei tutor"},
 
     {"code": "RBAC_READ", "description": "Leggere ruoli e permessi"},
     {"code": "RBAC_UPDATE", "description": "Gestire ruoli e permessi"},
-
-    {"code": "SUBJECT_READ", "description": "Leggere materie"},
-    {"code": "SUBJECT_CREATE", "description": "Creare materie"},
-    {"code": "SUBJECT_UPDATE", "description": "Modificare materie"},
-    {"code": "TOPIC_READ", "description": "Leggere argomenti"},
-    {"code": "TOPIC_UPDATE", "description": "Gestire argomenti"},
-    {"code": "TUTOR_SUBJECT_SET", "description": "Impostare materie e tariffe tutor"},
 
     {"code": "LESSON_READ", "description": "Leggere lezioni"},
     {"code": "LESSON_CREATE", "description": "Creare lezioni"},
@@ -28,25 +22,21 @@
 
     {"code": "PAYMENT_READ", "description": "Leggere pagamenti"},
     {"code": "PAYMENT_CREATE", "description": "Creare pagamenti"},
-    {"code": "PAYMENT_UPDATE", "description": "Aggiornare stato pagamenti"},
-
-    {"code": "NOTE_READ", "description": "Leggere note"},
-    {"code": "NOTE_CREATE", "description": "Creare note"},
-    {"code": "NOTE_UPDATE", "description": "Modificare note"}
+    {"code": "PAYMENT_UPDATE", "description": "Aggiornare stato pagamenti"}
   ],
   "role_permissions": [
     {
       "role": "READER",
-      "permissions": ["USER_READ","SUBJECT_READ","TOPIC_READ","LESSON_READ","PAYMENT_READ","NOTE_READ"]
+      "permissions": ["USER_READ","LESSON_READ","PAYMENT_READ"]
     },
     { "role": "SYSTEM_ADMIN", "permissions": ["*"] },
     {
       "role": "STAFF",
-      "permissions": ["USER_READ","SUBJECT_READ","TOPIC_READ","LESSON_READ","LESSON_CREATE","LESSON_UPDATE","LESSON_CANCEL","PAYMENT_READ","PAYMENT_CREATE","NOTE_READ","NOTE_CREATE"]
+      "permissions": ["USER_READ","LESSON_READ","LESSON_CREATE","LESSON_UPDATE","LESSON_CANCEL","PAYMENT_READ","PAYMENT_CREATE"]
     },
     {
       "role": "TUTOR",
-      "permissions": ["SUBJECT_READ","TOPIC_READ","TUTOR_SUBJECT_SET","LESSON_READ","LESSON_UPDATE","LESSON_CREATE","PAYMENT_READ","NOTE_READ","NOTE_CREATE"]
+      "permissions": ["LESSON_READ","LESSON_UPDATE","LESSON_CREATE","PAYMENT_READ"]
     }
   ],
   "basic_users":[

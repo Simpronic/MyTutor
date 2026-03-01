@@ -121,6 +121,7 @@ async function handleCreateLesson({ authFetch, lessonsBaseUrl }) {
     note: getValue(SELECTORS.note) || null,
     luogo: getValue(SELECTORS.location),
     status: getValue(SELECTORS.status),
+    
   };
 
   if (!payload.student_id || !payload.materia_code || !payload.start_at || !payload.end_at) {

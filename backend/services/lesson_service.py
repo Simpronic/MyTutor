@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List,Optional
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-import datetime 
+from datetime import datetime,date
 from backend.model import Lezione, LezionePartecipante, Materia, Studente, Utente
 from backend.schemas.lesson_controller_schemas import (
     LessonCreateRequest,
@@ -87,8 +87,8 @@ def create_lesson(
         data_inizio=lezione.data_inizio,
         data_fine=lezione.data_fine,
         note=lezione.note,
-        created_at = datetime.datetime.now(),
-        updated_at=datetime.datetime.now()
+        created_at = datetime.now(),
+        updated_at=datetime.now()
     )
 
 def list_subjects(
@@ -108,20 +108,42 @@ def list_subjects(
 def list_lessons(
     db: Session,
     user: Utente,
+    start: Optional[date],
+    end: Optional[date]
 ) -> List[LessonResponse]:
-    raise NotImplementedError
+    if start is not None and end is not None:
+        if start > end:
+            raise ValueError("Intervallo non valido: start > end")
+        return db.query(Lezione).filter(
+                    Lezione.tutor_id == user.id,
+                    Lezione.data_fine.between(start, end))
+    elif start is not None:
+        return db.query(Lezione).filter(
+            Lezione.tutor_id == user.id,
+            Lezione.data_inizio == start
+        )
+    elif end is not None:
+        return db.query(Lezione).filter(
+            Lezione.tutor_id == user.id,
+            Lezione.data_fine == end
+        )
+    return db.query(Lezione).filter(
+        Lezione.tutor_id == user.id
+    )
 
 def list_all_lessons(
         db:Session
 ) -> List[LessonResponse]:
-    raise NotImplementedError
+    return db.query(Lezione).all()
 
 def get_lesson(
     db: Session,
     user: Utente,
     lesson_id: int,
 ) -> LessonResponse:
-    raise NotImplementedError
+    return db.query(Lezione).filter(Lezione.id == lesson_id,
+                                    Lezione.tutor_id == user.id
+                                    ).one_or_none()
 
 
 def update_lesson(

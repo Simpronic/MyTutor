@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List,Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import date
+
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.db.base import get_db
@@ -29,10 +31,13 @@ def createLesson(
 
 @router.get("user/getAllLessons", response_model=List[LessonResponse])
 def createLesson(
+    start: Optional[date] = None,
+    end: Optional[date] = None,
     user:Utente = Depends(require_permission("LESSON_READ")),
     db: Session = Depends(get_db)  
 ) -> List[LessonResponse]:
-    return lesson_service.list_lessons(db,user)
+    return lesson_service.list_lessons(db,user,[start,end])
+
 
 @router.get("/getAllLessons", response_model=List[LessonResponse])
 def createLesson(
