@@ -113,3 +113,10 @@ def modifyMe(
         user,
         payload
     )
+
+@router.get("/user/getNumberOfLessons",response_model=int)
+def getNumberOfLessons(
+    db: Session = Depends(get_db),
+    _:Utente = Depends(require_permission("USER_STATISTICS"))
+):
+    pass
